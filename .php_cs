@@ -13,6 +13,7 @@ return PhpCsFixer\Config::create()
         ),
         '@Symfony:risky' => true,
         'array_syntax' => ['syntax' => 'short'],
+        'declare_strict_types' => true,
         'linebreak_after_opening_tag' => true,
         'mb_str_functions' => true,
         'no_php4_constructor' => true,
