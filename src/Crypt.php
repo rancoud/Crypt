@@ -24,7 +24,7 @@ class Crypt
     ];
 
     protected static $optionsBcrypt = [
-        'cost ' => 12,
+        'cost' => 12,
     ];
 
     protected static $caracters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmno
@@ -61,14 +61,13 @@ pqrstuvwxyz{|}~';
             if (static::$algoCurrent === static::$algoArgon2i) {
                 $string = password_hash($password, static::$algoCurrent, static::$optionsArgon2i);
             } else {
-                if(mb_strlen($password) > 72)
-                {
+                if (mb_strlen($password) > 72) {
                     throw new Exception('Password too long');
                 }
                 $string = password_hash($password, static::$algoCurrent, static::$optionsBcrypt);
             }
         } catch (Exception $e) {
-            if($e->getMessage() == 'Password too long'){
+            if ($e->getMessage() === 'Password too long') {
                 throw new Exception('Password too long');
             }
             throw new Exception('Hash Failure');
