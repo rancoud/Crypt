@@ -36,7 +36,11 @@ class CryptTest extends TestCase
         $result = Crypt::needsRehash($hash);
         static::assertFalse($result);
 
-        $hash = str_replace('9$m=1024,t=2,p=2$', '9$m=512,t=1,p=1$', $hash);
+        if (Crypt::getCurrentAlgo() === 2) {
+            $hash = str_replace('9$m=1024,t=2,p=2$', '9$m=512,t=1,p=1$', $hash);
+        } else {
+            $hash = str_replace('$2y$12$', '$2y$05$', $hash);
+        }
         $result = Crypt::needsRehash($hash);
         static::assertTrue($result);
     }
@@ -103,19 +107,29 @@ class CryptTest extends TestCase
 
     public function testBigPassword()
     {
-        $password = Crypt::getRandomString(1000);
-        $hash = Crypt::hash($password);
-        $result = Crypt::verify(mb_substr($password, 0, 1000), $hash);
-        static::assertTrue($result);
-        $result = Crypt::verify(mb_substr($password, 0, 999), $hash);
-        static::assertFalse($result);
+        if (Crypt::getCurrentAlgo() === 1) {
+            static::expectException(Exception::class);
+            Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
+        } else {
+            $password = Crypt::getRandomString(1000);
+            $hash = Crypt::hash($password);
+            $result = Crypt::verify(mb_substr($password, 0, 1000), $hash);
+            static::assertTrue($result);
+            $result = Crypt::verify(mb_substr($password, 0, 999), $hash);
+            static::assertFalse($result);
+        }
     }
 
     public function testHashFailure()
     {
-        static::expectException(Exception::class);
-        Crypt::setOptionArgon2iThreads(999999);
-        Crypt::hash('toto');
+        if (Crypt::getCurrentAlgo() === 2) {
+            static::expectException(Exception::class);
+            Crypt::setOptionArgon2iThreads(999999);
+            Crypt::hash('toto');
+        } else {
+            static::expectException(Exception::class);
+            Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
+        }
     }
 
     // bcrypt part
@@ -142,8 +156,8 @@ class CryptTest extends TestCase
         $hash = Crypt::hash('toto');
         $result = Crypt::needsRehash($hash);
         static::assertFalse($result);
-        
-        $hash = str_replace('$2y$10$', '$2y$05$', $hash);
+
+        $hash = str_replace('$2y$12$', '$2y$05$', $hash);
         $result = Crypt::needsRehash($hash);
         static::assertTrue($result);
     }
@@ -166,7 +180,7 @@ class CryptTest extends TestCase
         static::expectException(Exception::class);
         Crypt::setOptionBcryptCost(32);
     }
-    
+
     public function testGetOptionsBcrypt()
     {
         $options = Crypt::getOptionsBcrypt();
@@ -176,13 +190,12 @@ class CryptTest extends TestCase
     public function testHashExceptionPasswordTooLong()
     {
         static::expectException(Exception::class);
-        Crypt::hash("azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop");
+        Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
     }
-    
+
     public function testUseArgon2i()
     {
         Crypt::useArgon2i();
         static::assertEquals(2, Crypt::getCurrentAlgo());
     }
-
 }
