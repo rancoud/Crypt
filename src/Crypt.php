@@ -191,7 +191,7 @@ pqrstuvwxyz{|}~';
     /**
      * @param string $caracters
      */
-    public static function setCaracters(string $caracters): void
+    public static function setCaractersForRandomString(string $caracters): void
     {
         static::$caracters = $caracters;
     }
@@ -199,7 +199,7 @@ pqrstuvwxyz{|}~';
     /**
      * @return string
      */
-    public static function getCaracters(): string
+    public static function getCaractersForRandomString(): string
     {
         return static::$caracters;
     }
