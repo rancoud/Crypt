@@ -94,14 +94,14 @@ class CryptTest extends TestCase
 
     public function testSetCaracters()
     {
-        Crypt::setCaracters('aze');
-        $caracters = Crypt::getCaracters();
+        Crypt::setCaractersForRandomString('aze');
+        $caracters = Crypt::getCaractersForRandomString();
         static::assertEquals('aze', $caracters);
     }
 
     public function testGetCaracters()
     {
-        $caracters = Crypt::getCaracters();
+        $caracters = Crypt::getCaractersForRandomString();
         static::assertEquals('aze', $caracters);
     }
 
