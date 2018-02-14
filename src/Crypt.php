@@ -27,8 +27,7 @@ class Crypt
         'cost' => 12,
     ];
 
-    protected static $caracters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmno
-pqrstuvwxyz{|}~';
+    protected static $caracters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
     public static function useArgon2i(): void
     {
