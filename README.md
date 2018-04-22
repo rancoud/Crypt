@@ -39,5 +39,5 @@ Crypt::useBcrypt();
 
 
 ## How to Dev
-./run_all_commands.sh for phpcbf , phpcs , php-cs-fixer and phpunit and coverage  
-./run_php_unit_coverage.sh for phpunit and coverage  
+`./run_all_commands.sh` for php-cs-fixer and phpunit and coverage  
+`./run_php_unit_coverage.sh` for phpunit and coverage 
