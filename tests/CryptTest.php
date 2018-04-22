@@ -48,17 +48,17 @@ class CryptTest extends TestCase
     public function testGetRandomString()
     {
         $randomString = Crypt::getRandomString();
-        static::assertEquals(64, mb_strlen($randomString));
+        static::assertSame(64, mb_strlen($randomString));
 
         $randomString = Crypt::getRandomString(105);
-        static::assertEquals(105, mb_strlen($randomString));
+        static::assertSame(105, mb_strlen($randomString));
     }
 
     public function testSetOptionMemoryCost()
     {
         Crypt::setOptionArgon2iMemoryCost(128);
         $options = Crypt::getOptionsArgon2i();
-        static::assertEquals(128, $options['memory_cost']);
+        static::assertSame(128, $options['memory_cost']);
 
         static::expectException(Exception::class);
         Crypt::setOptionArgon2iMemoryCost(0);
@@ -68,7 +68,7 @@ class CryptTest extends TestCase
     {
         Crypt::setOptionArgon2iTimeCost(3);
         $options = Crypt::getOptionsArgon2i();
-        static::assertEquals(3, $options['time_cost']);
+        static::assertSame(3, $options['time_cost']);
 
         static::expectException(Exception::class);
         Crypt::setOptionArgon2iTimeCost(0);
@@ -78,7 +78,7 @@ class CryptTest extends TestCase
     {
         Crypt::setOptionArgon2iThreads(5);
         $options = Crypt::getOptionsArgon2i();
-        static::assertEquals(5, $options['threads']);
+        static::assertSame(5, $options['threads']);
 
         static::expectException(Exception::class);
         Crypt::setOptionArgon2iThreads(0);
@@ -87,22 +87,22 @@ class CryptTest extends TestCase
     public function testGetOptions()
     {
         $options = Crypt::getOptionsArgon2i();
-        static::assertEquals(128, $options['memory_cost']);
-        static::assertEquals(3, $options['time_cost']);
-        static::assertEquals(5, $options['threads']);
+        static::assertSame(128, $options['memory_cost']);
+        static::assertSame(3, $options['time_cost']);
+        static::assertSame(5, $options['threads']);
     }
 
     public function testSetCaracters()
     {
         Crypt::setCaractersForRandomString('aze');
         $caracters = Crypt::getCaractersForRandomString();
-        static::assertEquals('aze', $caracters);
+        static::assertSame('aze', $caracters);
     }
 
     public function testGetCaracters()
     {
         $caracters = Crypt::getCaractersForRandomString();
-        static::assertEquals('aze', $caracters);
+        static::assertSame('aze', $caracters);
     }
 
     public function testBigPassword()
@@ -166,7 +166,7 @@ class CryptTest extends TestCase
     {
         Crypt::setOptionBcryptCost(5);
         $options = Crypt::getOptionsBcrypt();
-        static::assertEquals(5, $options['cost']);
+        static::assertSame(5, $options['cost']);
     }
 
     public function testSetOptionBcryptCostExceptionLowRounds()
@@ -184,7 +184,7 @@ class CryptTest extends TestCase
     public function testGetOptionsBcrypt()
     {
         $options = Crypt::getOptionsBcrypt();
-        static::assertEquals(5, $options['cost']);
+        static::assertSame(5, $options['cost']);
     }
 
     public function testHashExceptionPasswordTooLong()
@@ -196,6 +196,6 @@ class CryptTest extends TestCase
     public function testUseArgon2i()
     {
         Crypt::useArgon2i();
-        static::assertEquals(2, Crypt::getCurrentAlgo());
+        static::assertSame(2, Crypt::getCurrentAlgo());
     }
 }
