@@ -100,12 +100,9 @@ class CryptTest extends TestCase
 
     public function testBigPassword()
     {
-        if (Crypt::getCurrentAlgo() === 1) {
-            static::expectException(CryptException::class);
-            static::expectExceptionMessage('Memory cost is too small');
+        if (defined('PASSWORD_ARGON2I')) {
+            Crypt::useArgon2i();
 
-            Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
-        } else {
             $password = Crypt::getRandomString(1000);
             $hash = Crypt::hash($password);
             $result = Crypt::verify(mb_substr($password, 0, 1000), $hash);
@@ -113,21 +110,28 @@ class CryptTest extends TestCase
             $result = Crypt::verify(mb_substr($password, 0, 999), $hash);
             static::assertFalse($result);
         }
+
+        Crypt::useBcrypt();
+
+        static::expectException(CryptException::class);
+        static::expectExceptionMessage('Password too long for bcrypt (72 max): 1000 chars');
+
+        $password = Crypt::getRandomString(1000);
+        Crypt::hash($password);
     }
 
     public function testHashFailure()
     {
-        if (Crypt::getCurrentAlgo() === 2) {
+        if (defined('PASSWORD_ARGON2I')) {
+            Crypt::useArgon2i();
+
             static::expectException(CryptException::class);
             static::expectExceptionMessage('Hash Failure');
 
             Crypt::setOptionArgon2iThreads(999999);
             Crypt::hash('toto');
         } else {
-            static::expectException(CryptException::class);
-            static::expectExceptionMessage('Hash Failure');
-
-            Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
+            static::assertTrue(true);
         }
     }
 
