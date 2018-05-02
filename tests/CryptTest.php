@@ -7,6 +7,7 @@ namespace Rancoud\Crypt\Test;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Rancoud\Crypt\Crypt;
+use Rancoud\Crypt\CryptException;
 
 /**
  * Class CryptTest.
@@ -61,6 +62,8 @@ class CryptTest extends TestCase
         static::assertSame(128, $options['memory_cost']);
 
         static::expectException(Exception::class);
+        static::expectExceptionMessage('Memory cost is too small: 0 bytes');
+
         Crypt::setOptionArgon2iMemoryCost(0);
     }
 
@@ -71,6 +74,8 @@ class CryptTest extends TestCase
         static::assertSame(3, $options['time_cost']);
 
         static::expectException(Exception::class);
+        static::expectExceptionMessage('Time cost is too small: 0');
+
         Crypt::setOptionArgon2iTimeCost(0);
     }
 
@@ -81,26 +86,14 @@ class CryptTest extends TestCase
         static::assertSame(5, $options['threads']);
 
         static::expectException(Exception::class);
+        static::expectExceptionMessage('Number of threads is too small: 0');
+
         Crypt::setOptionArgon2iThreads(0);
     }
 
-    public function testGetOptions()
-    {
-        $options = Crypt::getOptionsArgon2i();
-        static::assertSame(128, $options['memory_cost']);
-        static::assertSame(3, $options['time_cost']);
-        static::assertSame(5, $options['threads']);
-    }
-
-    public function testSetCaracters()
+    public function testSetGetCaracters()
     {
         Crypt::setCaractersForRandomString('aze');
-        $caracters = Crypt::getCaractersForRandomString();
-        static::assertSame('aze', $caracters);
-    }
-
-    public function testGetCaracters()
-    {
         $caracters = Crypt::getCaractersForRandomString();
         static::assertSame('aze', $caracters);
     }
@@ -108,7 +101,9 @@ class CryptTest extends TestCase
     public function testBigPassword()
     {
         if (Crypt::getCurrentAlgo() === 1) {
-            static::expectException(Exception::class);
+            static::expectException(CryptException::class);
+            static::expectExceptionMessage('Memory cost is too small');
+
             Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
         } else {
             $password = Crypt::getRandomString(1000);
@@ -123,11 +118,15 @@ class CryptTest extends TestCase
     public function testHashFailure()
     {
         if (Crypt::getCurrentAlgo() === 2) {
-            static::expectException(Exception::class);
+            static::expectException(CryptException::class);
+            static::expectExceptionMessage('Hash Failure');
+
             Crypt::setOptionArgon2iThreads(999999);
             Crypt::hash('toto');
         } else {
-            static::expectException(Exception::class);
+            static::expectException(CryptException::class);
+            static::expectExceptionMessage('Hash Failure');
+
             Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
         }
     }
@@ -142,6 +141,7 @@ class CryptTest extends TestCase
 
     public function testVerifyBcrypt()
     {
+        Crypt::useBcrypt();
         $hash = Crypt::hash('toto');
         $result = Crypt::verify('toto', $hash);
         static::assertTrue($result);
@@ -153,6 +153,7 @@ class CryptTest extends TestCase
 
     public function testNeedsRehashBcrypt()
     {
+        Crypt::useBcrypt();
         $hash = Crypt::hash('toto');
         $result = Crypt::needsRehash($hash);
         static::assertFalse($result);
@@ -162,7 +163,7 @@ class CryptTest extends TestCase
         static::assertTrue($result);
     }
 
-    public function testSetOptionBcryptCost()
+    public function testSetGetOptionBcryptCost()
     {
         Crypt::setOptionBcryptCost(5);
         $options = Crypt::getOptionsBcrypt();
@@ -172,24 +173,26 @@ class CryptTest extends TestCase
     public function testSetOptionBcryptCostExceptionLowRounds()
     {
         static::expectException(Exception::class);
+        static::expectExceptionMessage('Invalid number of rounds (between 4 and 31): 3');
+
         Crypt::setOptionBcryptCost(3);
     }
 
     public function testSetOptionBcryptCostExceptionHighRounds()
     {
         static::expectException(Exception::class);
-        Crypt::setOptionBcryptCost(32);
-    }
+        static::expectExceptionMessage('Invalid number of rounds (between 4 and 31): 32');
 
-    public function testGetOptionsBcrypt()
-    {
-        $options = Crypt::getOptionsBcrypt();
-        static::assertSame(5, $options['cost']);
+        Crypt::setOptionBcryptCost(32);
     }
 
     public function testHashExceptionPasswordTooLong()
     {
+        Crypt::useBcrypt();
+
         static::expectException(Exception::class);
+        static::expectExceptionMessage('Password too long');
+
         Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
     }
 
