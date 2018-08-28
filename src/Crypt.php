@@ -234,7 +234,7 @@ class Crypt
             return;
         }
 
-        static::$algoCurrent = defined('PASSWORD_ARGON2I') ? static::$algoArgon2i : static::$algoBcrypt;
+        static::$algoCurrent = \defined('PASSWORD_ARGON2I') ? static::$algoArgon2i : static::$algoBcrypt;
     }
 
     /**
