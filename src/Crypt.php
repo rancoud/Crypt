@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Rancoud\Crypt;
 
-use Exception;
-
 /**
  * Class Crypt.
  */
@@ -68,20 +66,20 @@ class Crypt
 
         try {
             if (static::$algoCurrent === static::$algoArgon2i) {
-                $string = password_hash($password, static::$algoCurrent, static::$optionsArgon2i);
+                $string = \password_hash($password, static::$algoCurrent, static::$optionsArgon2i);
             } else {
-                if (mb_strlen($password) > self::MAX_LENGTH_BCRYPT) {
-                    throw new Exception('Password too long');
+                if (\mb_strlen($password) > self::MAX_LENGTH_BCRYPT) {
+                    throw new \Exception('Password too long');
                 }
-                $string = password_hash($password, static::$algoCurrent, static::$optionsBcrypt);
+                $string = \password_hash($password, static::$algoCurrent, static::$optionsBcrypt);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if ($e->getMessage() === 'Password too long') {
                 throw new CryptException(
-                    sprintf(
+                    \sprintf(
                         'Password too long for bcrypt (%d max): %d chars',
                         self::MAX_LENGTH_BCRYPT,
-                        mb_strlen($password)
+                        \mb_strlen($password)
                     )
                 );
             }
@@ -99,7 +97,7 @@ class Crypt
      */
     public static function verify(string $password, string $hash): bool
     {
-        return password_verify($password, $hash);
+        return \password_verify($password, $hash);
     }
 
     /**
@@ -112,10 +110,10 @@ class Crypt
         static::chooseAlgo();
 
         if (static::$algoCurrent === static::$algoArgon2i) {
-            return password_needs_rehash($hash, static::$algoCurrent, static::$optionsArgon2i);
+            return \password_needs_rehash($hash, static::$algoCurrent, static::$optionsArgon2i);
         }
 
-        return password_needs_rehash($hash, static::$algoCurrent, static::$optionsBcrypt);
+        return \password_needs_rehash($hash, static::$algoCurrent, static::$optionsBcrypt);
     }
 
     /**
@@ -126,10 +124,10 @@ class Crypt
     public static function getRandomString(int $length = 64): string
     {
         $string = '';
-        $countCaracters = mb_strlen(static::$caracters) - 1;
+        $countCaracters = \mb_strlen(static::$caracters) - 1;
 
         for ($i = 0; $i < $length; ++$i) {
-            $string .= static::$caracters[rand(0, $countCaracters)];
+            $string .= static::$caracters[\rand(0, $countCaracters)];
         }
 
         return $string;
@@ -143,7 +141,7 @@ class Crypt
     public static function setOptionArgon2iMemoryCost(int $bytes): void
     {
         if ($bytes < self::MIN_MEMORY_COST) {
-            throw new CryptException(sprintf('Memory cost is too small: %d bytes', $bytes));
+            throw new CryptException(\sprintf('Memory cost is too small: %d bytes', $bytes));
         }
 
         static::$optionsArgon2i['memory_cost'] = $bytes;
@@ -157,7 +155,7 @@ class Crypt
     public static function setOptionArgon2iTimeCost(int $time): void
     {
         if ($time < self::MIN_TIME_COST) {
-            throw new CryptException(sprintf('Time cost is too small: %d', $time));
+            throw new CryptException(\sprintf('Time cost is too small: %d', $time));
         }
 
         static::$optionsArgon2i['time_cost'] = $time;
@@ -171,7 +169,7 @@ class Crypt
     public static function setOptionArgon2iThreads(int $threads): void
     {
         if ($threads < self::MIN_THREADS) {
-            throw new CryptException(sprintf('Number of threads is too small: %d', $threads));
+            throw new CryptException(\sprintf('Number of threads is too small: %d', $threads));
         }
         static::$optionsArgon2i['threads'] = $threads;
     }
@@ -193,7 +191,7 @@ class Crypt
     {
         if ($rounds < self::MIN_ROUNDS || $rounds > self::MAX_ROUNDS) {
             throw new CryptException(
-                sprintf(
+                \sprintf(
                     'Invalid number of rounds (between %d and %d): %d',
                     self::MIN_ROUNDS,
                     self::MAX_ROUNDS,
