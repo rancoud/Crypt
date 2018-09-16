@@ -19,24 +19,23 @@ $result = Crypt::verify($password, $hash);
 Crypt::useBcrypt();
 ```
 
-## Crypt Methods
-### General Commands  
+## Crypt
+### Static Methods  
+* getCaractersForRandomString(): string  
+* getCurrentAlgo(): int  
+* getOptionsArgon2i(): array  
+* getOptionsBcrypt(): array  
+* getRandomString([length: int = 64]): string  
+* hash(password: string): string  
+* needsRehash(hash: string): bool  
+* setCaractersForRandomString(caracters: string): void  
+* setOptionArgon2iMemoryCost(bytes: int): void  
+* setOptionArgon2iThreads(threads: int): void  
+* setOptionArgon2iTimeCost(time: int): void  
+* setOptionBcryptCost(rounds: int): void  
 * useArgon2i(): void  
 * useBcrypt(): void  
-* hash(password: string): string  
 * verify(password: string, hash: string): bool  
-* needsRehash(hash: string): bool  
-* getRandomString([length: int = 64]): string  
-* setOptionArgon2iMemoryCost(bytes: int): void  
-* setOptionArgon2iTimeCost(time: int): void  
-* setOptionArgon2iThreads(threads: int): void  
-* getOptionsArgon2i(): array  
-* setOptionBcryptCost(rounds: int): void  
-* getOptionsBcrypt(): array  
-* setCaracters(caracters: string): void  
-* getCaracters(): string  
-* getCurrentAlgo(): int  
-
 
 ## How to Dev
 `./run_all_commands.sh` for php-cs-fixer and phpunit and coverage  
