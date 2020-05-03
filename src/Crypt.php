@@ -18,16 +18,17 @@ class Crypt
     protected const MIN_ROUNDS = 4;
     protected const MAX_ROUNDS = 31;
 
-    protected static int $algoBcrypt = 1; // PASSWORD_BCRYPT
-    protected static int $algoArgon2i = 2; // PASSWORD_ARGON2I
+    protected static string $algoArgon2id = 'argon2id'; // PASSWORD_ARGON2ID
+    protected static string $algoArgon2i = 'argon2i'; // PASSWORD_ARGON2I
+    protected static string $algoBcrypt = '2y'; // PASSWORD_BCRYPT
 
-    protected static int $algoCurrent = 2; // by default use ARGON2I
+    protected static string $algoCurrent = 'argon2id'; // by default use ARGON2ID
     protected static bool $algoFixed = false;
 
     protected static array $optionsArgon2i = [
         'memory_cost' => 1024, // PASSWORD_ARGON2_DEFAULT_MEMORY_COST
-        'time_cost' => 2, // PASSWORD_ARGON2_DEFAULT_TIME_COST
-        'threads' => 2, // PASSWORD_ARGON2_DEFAULT_THREADS
+        'time_cost'   => 2, // PASSWORD_ARGON2_DEFAULT_TIME_COST
+        'threads'     => 2, // PASSWORD_ARGON2_DEFAULT_THREADS
     ];
 
     protected static array $optionsBcrypt = [
@@ -36,6 +37,13 @@ class Crypt
 
     protected static string $caracters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
     '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+
+    public static function useArgon2id(): void
+    {
+        static::$algoFixed = true;
+
+        static::$algoCurrent = static::$algoArgon2id;
+    }
 
     public static function useArgon2i(): void
     {
@@ -65,11 +73,11 @@ class Crypt
         static::chooseAlgo();
 
         try {
-            if (static::$algoCurrent === static::$algoArgon2i) {
+            if (static::$algoCurrent === static::$algoArgon2i || static::$algoCurrent === static::$algoArgon2id) {
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsArgon2i);
             } else {
                 if (\mb_strlen($password) > self::MAX_LENGTH_BCRYPT) {
-                    /** @noinspection ThrowRawExceptionInspection */
+                    /* @noinspection ThrowRawExceptionInspection */
                     throw new \Exception('Password too long');
                 }
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsBcrypt);
@@ -110,7 +118,7 @@ class Crypt
     {
         static::chooseAlgo();
 
-        if (static::$algoCurrent === static::$algoArgon2i) {
+        if (static::$algoCurrent === static::$algoArgon2i || static::$algoCurrent === static::$algoArgon2id) {
             return \password_needs_rehash($hash, static::$algoCurrent, static::$optionsArgon2i);
         }
 
@@ -120,8 +128,9 @@ class Crypt
     /**
      * @param int $length
      *
-     * @return string
      * @throws \Exception
+     *
+     * @return string
      */
     public static function getRandomString(int $length = 64): string
     {
@@ -228,19 +237,26 @@ class Crypt
         return static::$caracters;
     }
 
+    /** @codeCoverageIgnore  */
     protected static function chooseAlgo(): void
     {
         if (static::$algoFixed) {
             return;
         }
 
-        static::$algoCurrent = \defined('PASSWORD_ARGON2I') ? static::$algoArgon2i : static::$algoBcrypt;
+        if (\defined('PASSWORD_ARGON2ID')) {
+            static::$algoCurrent = static::$algoArgon2id;
+        } elseif (\defined('PASSWORD_ARGON2I')) {
+            static::$algoCurrent = static::$algoArgon2i;
+        } else {
+            static::$algoCurrent = static::$algoBcrypt;
+        }
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public static function getCurrentAlgo(): int
+    public static function getCurrentAlgo(): string
     {
         return static::$algoCurrent;
     }

@@ -47,7 +47,8 @@ class CryptTest extends TestCase
             $result = Crypt::needsRehash($hash);
             static::assertFalse($result);
 
-            if (Crypt::getCurrentAlgo() === 2) {
+            $currentAlgo = Crypt::getCurrentAlgo();
+            if ($currentAlgo === 'argon2id' || $currentAlgo === 'argon2i') {
                 $hash = str_replace('9$m=1024,t=2,p=2$', '9$m=512,t=1,p=1$', $hash);
             } else {
                 $hash = str_replace('$2y$12$', '$2y$05$', $hash);
@@ -141,6 +142,22 @@ class CryptTest extends TestCase
 
     public function testBigPassword(): void
     {
+        if (defined('PASSWORD_ARGON2ID')) {
+            Crypt::useArgon2id();
+
+            try {
+                $password = Crypt::getRandomString(1000);
+                $hash = Crypt::hash($password);
+                $result = Crypt::verify(mb_substr($password, 0, 1000), $hash);
+                static::assertTrue($result);
+                $result = Crypt::verify(mb_substr($password, 0, 999), $hash);
+                static::assertFalse($result);
+            } catch (Exception $e) {
+                /** @noinspection PhpUnhandledExceptionInspection */
+                throw $e;
+            }
+        }
+
         if (defined('PASSWORD_ARGON2I')) {
             Crypt::useArgon2i();
 
@@ -175,6 +192,20 @@ class CryptTest extends TestCase
 
     public function testHashFailure(): void
     {
+        if (defined('PASSWORD_ARGON2ID')) {
+            Crypt::useArgon2id();
+
+            $this->expectException(CryptException::class);
+            $this->expectExceptionMessage('Hash Failure');
+
+            try {
+                Crypt::setOptionArgon2iThreads(999999);
+                Crypt::hash('toto');
+            } catch (CryptException $e) {
+                throw $e;
+            }
+        }
+
         if (defined('PASSWORD_ARGON2I')) {
             Crypt::useArgon2i();
 
@@ -187,9 +218,9 @@ class CryptTest extends TestCase
             } catch (CryptException $e) {
                 throw $e;
             }
-        } else {
-            static::assertTrue(true);
         }
+
+        static::assertTrue(true);
     }
 
     // bcrypt part
@@ -292,6 +323,13 @@ class CryptTest extends TestCase
     public function testUseArgon2i(): void
     {
         Crypt::useArgon2i();
-        static::assertSame(2, Crypt::getCurrentAlgo());
+        static::assertSame('argon2i', Crypt::getCurrentAlgo());
+    }
+
+    public function testUseArgon2id(): void
+    {
+        Crypt::useBcrypt();
+        Crypt::useArgon2id();
+        static::assertSame('argon2id', Crypt::getCurrentAlgo());
     }
 }
