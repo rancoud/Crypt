@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/rancoud/Crypt.svg?branch=master)](https://travis-ci.org/rancoud/Crypt) [![Coverage Status](https://coveralls.io/repos/github/rancoud/Crypt/badge.svg?branch=master)](https://coveralls.io/github/rancoud/Crypt?branch=master)
 
-Crypt using Argon2i by default with bcrypt in fallback.  
+Crypt using Argon2id by default with Argon2i and bcrypt in fallback.  
 
 ## Installation
 ```php
@@ -14,6 +14,9 @@ composer require rancoud/crypt
 $password = 'my_password';
 $hash = Crypt::hash($password);
 $result = Crypt::verify($password, $hash);
+
+// use only Argon2i
+Crypt::useArgon2i();
 
 // use only bcrypt
 Crypt::useBcrypt();
@@ -33,6 +36,7 @@ Crypt::useBcrypt();
 * setOptionArgon2iThreads(threads: int): void  
 * setOptionArgon2iTimeCost(time: int): void  
 * setOptionBcryptCost(rounds: int): void  
+* useArgon2id(): void  
 * useArgon2i(): void  
 * useBcrypt(): void  
 * verify(password: string, hash: string): bool  
