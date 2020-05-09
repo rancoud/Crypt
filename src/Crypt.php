@@ -35,7 +35,7 @@ class Crypt
         'cost' => 12,
     ];
 
-    protected static string $caracters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
+    protected static string $characters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
     '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
     public static function useArgon2id(): void
@@ -135,10 +135,10 @@ class Crypt
     public static function getRandomString(int $length = 64): string
     {
         $string = '';
-        $countCaracters = \mb_strlen(static::$caracters) - 1;
+        $countCharacters = \mb_strlen(static::$characters) - 1;
 
         for ($i = 0; $i < $length; ++$i) {
-            $string .= static::$caracters[\random_int(0, $countCaracters)];
+            $string .= static::$characters[\random_int(0, $countCharacters)];
         }
 
         return $string;
@@ -222,19 +222,19 @@ class Crypt
     }
 
     /**
-     * @param string $caracters
+     * @param string $characters
      */
-    public static function setCaractersForRandomString(string $caracters): void
+    public static function setCharactersForRandomString(string $characters): void
     {
-        static::$caracters = $caracters;
+        static::$characters = $characters;
     }
 
     /**
      * @return string
      */
-    public static function getCaractersForRandomString(): string
+    public static function getCharactersForRandomString(): string
     {
-        return static::$caracters;
+        return static::$characters;
     }
 
     /** @codeCoverageIgnore  */

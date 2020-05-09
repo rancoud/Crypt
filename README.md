@@ -24,14 +24,14 @@ Crypt::useBcrypt();
 
 ## Crypt
 ### Static Methods  
-* getCaractersForRandomString(): string  
+* getCharactersForRandomString(): string  
 * getCurrentAlgo(): int  
 * getOptionsArgon2i(): array  
 * getOptionsBcrypt(): array  
 * getRandomString([length: int = 64]): string  
 * hash(password: string): string  
 * needsRehash(hash: string): bool  
-* setCaractersForRandomString(caracters: string): void  
+* setCharactersForRandomString(characters: string): void  
 * setOptionArgon2iMemoryCost(bytes: int): void  
 * setOptionArgon2iThreads(threads: int): void  
 * setOptionArgon2iTimeCost(time: int): void  
