@@ -133,11 +133,11 @@ class CryptTest extends TestCase
         }
     }
 
-    public function testSetGetCaracters(): void
+    public function testSetGetCharacters(): void
     {
-        Crypt::setCaractersForRandomString('aze');
-        $caracters = Crypt::getCaractersForRandomString();
-        static::assertSame('aze', $caracters);
+        Crypt::setCharactersForRandomString('aze');
+        $characters = Crypt::getCharactersForRandomString();
+        static::assertSame('aze', $characters);
     }
 
     public function testBigPassword(): void
