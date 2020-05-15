@@ -1,6 +1,11 @@
 # Crypt Package
 
-[![Build Status](https://travis-ci.org/rancoud/Crypt.svg?branch=master)](https://travis-ci.org/rancoud/Crypt) [![Coverage Status](https://coveralls.io/repos/github/rancoud/Crypt/badge.svg?branch=master)](https://coveralls.io/github/rancoud/Crypt?branch=master)
+![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/rancoud/crypt)
+![Packagist Version](https://img.shields.io/packagist/v/rancoud/crypt)
+![Packagist Downloads](https://img.shields.io/packagist/dt/rancoud/crypt)
+[![Build Status](https://travis-ci.org/rancoud/Crypt.svg?branch=master)](https://travis-ci.org/rancoud/Crypt)
+[![Coverage Status](https://coveralls.io/repos/github/rancoud/Crypt/badge.svg?branch=master)](https://coveralls.io/github/rancoud/Crypt?branch=master)
+[![composer.lock](https://poser.pugx.org/rancoud/crypt/composerlock)](https://packagist.org/packages/rancoud/crypt)
 
 Crypt using Argon2id by default with Argon2i and bcrypt in fallback.  
 
