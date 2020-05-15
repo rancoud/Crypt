@@ -3,6 +3,7 @@
 ![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/rancoud/crypt)
 [![Packagist Version](https://img.shields.io/packagist/v/rancoud/crypt)](https://packagist.org/packages/rancoud/crypt)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/rancoud/crypt)](https://packagist.org/packages/rancoud/crypt)
+[![Composer dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://github.com/rancoud/Crypt/blob/master/composer.json)
 [![Build Status](https://travis-ci.org/rancoud/Crypt.svg?branch=master)](https://travis-ci.org/rancoud/Crypt)
 [![Coverage Status](https://coveralls.io/repos/github/rancoud/Crypt/badge.svg?branch=master)](https://coveralls.io/github/rancoud/Crypt?branch=master)
 [![composer.lock](https://poser.pugx.org/rancoud/crypt/composerlock)](https://packagist.org/packages/rancoud/crypt)
