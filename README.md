@@ -4,8 +4,8 @@
 [![Packagist Version](https://img.shields.io/packagist/v/rancoud/crypt)](https://packagist.org/packages/rancoud/crypt)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/rancoud/crypt)](https://packagist.org/packages/rancoud/crypt)
 [![Composer dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://github.com/rancoud/Crypt/blob/master/composer.json)
-[![Build Status](https://travis-ci.org/rancoud/Crypt.svg?branch=master)](https://travis-ci.org/rancoud/Crypt)
-[![Coverage Status](https://coveralls.io/repos/github/rancoud/Crypt/badge.svg?branch=master)](https://coveralls.io/github/rancoud/Crypt?branch=master)
+[![Test workflow](https://img.shields.io/github/workflow/status/rancoud/crypt/test?label=test&logo=github)](https://github.com/rancoud/crypt/actions?workflow=test)
+[![Codecov](https://img.shields.io/codecov/c/github/rancoud/crypt?logo=codecov)](https://codecov.io/gh/rancoud/crypt)
 [![composer.lock](https://poser.pugx.org/rancoud/crypt/composerlock)](https://packagist.org/packages/rancoud/crypt)
 
 Crypt using Argon2id by default with Argon2i and bcrypt in fallback.  
@@ -48,5 +48,6 @@ Crypt::useBcrypt();
 * verify(password: string, hash: string): bool  
 
 ## How to Dev
-`./run_all_commands.sh` for php-cs-fixer and phpunit and coverage  
-`./run_php_unit_coverage.sh` for phpunit and coverage 
+`composer ci` for php-cs-fixer and phpunit and coverage  
+`composer lint` for php-cs-fixer  
+`composer test` for phpunit and coverage
