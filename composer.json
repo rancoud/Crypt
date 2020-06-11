@@ -16,8 +16,7 @@
         }
     },
     "require": {
-        "php": ">=7.4.0",
-        "ext-sodium": "*"
+        "php": ">=7.4.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
