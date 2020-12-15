@@ -93,6 +93,8 @@ class Crypt
                 );
             }
             throw new CryptException('Hash Failure: ' . $e->getMessage());
+        } catch (\Throwable $t) {
+            throw new CryptException('Hash Failure: ' . $t->getMessage());
         }
 
         return $string;

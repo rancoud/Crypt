@@ -215,11 +215,13 @@ class CryptTest extends TestCase
             $this->expectExceptionMessage('Hash Failure');
 
             try {
-                Crypt::setOptionArgon2iThreads(999999);
+                Crypt::setOptionArgon2iMemoryCost(999999);
                 Crypt::hash('toto');
             } catch (CryptException $e) {
                 throw $e;
             }
+
+            static::assertTrue(false);
         }
 
         if (defined('PASSWORD_ARGON2I')) {
@@ -229,11 +231,13 @@ class CryptTest extends TestCase
             $this->expectExceptionMessage('Hash Failure');
 
             try {
-                Crypt::setOptionArgon2iThreads(999999);
+                Crypt::setOptionArgon2iMemoryCost(999999);
                 Crypt::hash('toto');
             } catch (CryptException $e) {
                 throw $e;
             }
+
+            static::assertTrue(false);
         }
 
         static::assertTrue(true);
