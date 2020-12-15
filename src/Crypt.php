@@ -26,9 +26,9 @@ class Crypt
     protected static bool $algoFixed = false;
 
     protected static array $optionsArgon2i = [
-        'memory_cost' => 1024, // PASSWORD_ARGON2_DEFAULT_MEMORY_COST
-        'time_cost'   => 2, // PASSWORD_ARGON2_DEFAULT_TIME_COST
-        'threads'     => 2, // PASSWORD_ARGON2_DEFAULT_THREADS
+        'memory_cost' => 65536, // PASSWORD_ARGON2_DEFAULT_MEMORY_COST
+        'time_cost'   => 4, // PASSWORD_ARGON2_DEFAULT_TIME_COST
+        'threads'     => 1, // PASSWORD_ARGON2_DEFAULT_THREADS
     ];
 
     protected static array $optionsBcrypt = [

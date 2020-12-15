@@ -49,7 +49,7 @@ class CryptTest extends TestCase
 
             $currentAlgo = Crypt::getCurrentAlgo();
             if ($currentAlgo === 'argon2id' || $currentAlgo === 'argon2i') {
-                $hash = str_replace('9$m=1024,t=2,p=2$', '9$m=512,t=1,p=1$', $hash);
+                $hash = str_replace('9$m=65536,t=4,p=1$', '9$m=512,t=1,p=1$', $hash);
             } else {
                 $hash = str_replace('$2y$12$', '$2y$05$', $hash);
             }
