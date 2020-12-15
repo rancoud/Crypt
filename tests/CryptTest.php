@@ -9,6 +9,7 @@ use Rancoud\Crypt\Crypt;
 use Rancoud\Crypt\CryptException;
 
 /**
+ * @runTestsInSeparateProcesses
  * Class CryptTest.
  */
 class CryptTest extends TestCase
@@ -85,6 +86,14 @@ class CryptTest extends TestCase
             $options = Crypt::getOptionsArgon2i();
             static::assertSame(128, $options['memory_cost']);
 
+            Crypt::setOptionArgon2iThreads(2);
+            $options = Crypt::getOptionsArgon2i();
+            static::assertSame(128, $options['memory_cost']);
+
+            Crypt::setOptionArgon2iThreads(24);
+            $options = Crypt::getOptionsArgon2i();
+            static::assertSame(192, $options['memory_cost']);
+
             Crypt::setOptionArgon2iMemoryCost(0);
         } catch (CryptException $e) {
             throw $e;
@@ -118,6 +127,13 @@ class CryptTest extends TestCase
             Crypt::setOptionArgon2iThreads(5);
             $options = Crypt::getOptionsArgon2i();
             static::assertSame(5, $options['threads']);
+            static::assertSame(65536, $options['memory_cost']);
+
+            Crypt::setOptionArgon2iMemoryCost(8);
+            Crypt::setOptionArgon2iThreads(5);
+            $options = Crypt::getOptionsArgon2i();
+            static::assertSame(5, $options['threads']);
+            static::assertSame(5 * 8, $options['memory_cost']);
         } catch (CryptException $e) {
             /** @noinspection PhpUnhandledExceptionInspection */
             throw $e;

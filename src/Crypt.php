@@ -11,7 +11,7 @@ class Crypt
 {
     protected const MAX_LENGTH_BCRYPT = 72;
 
-    protected const MIN_MEMORY_COST = 16;
+    protected const MIN_MEMORY_COST = 8;
     protected const MIN_TIME_COST = 1;
     protected const MIN_THREADS = 1;
 
@@ -76,7 +76,7 @@ class Crypt
             if (static::$algoCurrent === static::$algoArgon2i || static::$algoCurrent === static::$algoArgon2id) {
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsArgon2i);
             } else {
-                if (\mb_strlen($password) > self::MAX_LENGTH_BCRYPT) {
+                if (\mb_strlen($password) > static::MAX_LENGTH_BCRYPT) {
                     /* @noinspection ThrowRawExceptionInspection */
                     throw new \Exception('Password too long');
                 }
@@ -87,12 +87,12 @@ class Crypt
                 throw new CryptException(
                     \sprintf(
                         'Password too long for bcrypt (%d max): %d chars',
-                        self::MAX_LENGTH_BCRYPT,
+                        static::MAX_LENGTH_BCRYPT,
                         \mb_strlen($password)
                     )
                 );
             }
-            throw new CryptException('Hash Failure');
+            throw new CryptException('Hash Failure: ' . $e->getMessage());
         }
 
         return $string;
@@ -151,11 +151,16 @@ class Crypt
      */
     public static function setOptionArgon2iMemoryCost(int $bytes): void
     {
-        if ($bytes < self::MIN_MEMORY_COST) {
+        if ($bytes < static::MIN_MEMORY_COST) {
             throw new CryptException(\sprintf('Memory cost is too small: %d bytes', $bytes));
         }
 
         static::$optionsArgon2i['memory_cost'] = $bytes;
+
+        $minThreads = \floor($bytes / 8);
+        if (static::$optionsArgon2i['threads'] < $minThreads) {
+            static::$optionsArgon2i['threads'] = $minThreads;
+        }
     }
 
     /**
@@ -165,7 +170,7 @@ class Crypt
      */
     public static function setOptionArgon2iTimeCost(int $time): void
     {
-        if ($time < self::MIN_TIME_COST) {
+        if ($time < static::MIN_TIME_COST) {
             throw new CryptException(\sprintf('Time cost is too small: %d', $time));
         }
 
@@ -179,10 +184,15 @@ class Crypt
      */
     public static function setOptionArgon2iThreads(int $threads): void
     {
-        if ($threads < self::MIN_THREADS) {
+        if ($threads < static::MIN_THREADS) {
             throw new CryptException(\sprintf('Number of threads is too small: %d', $threads));
         }
         static::$optionsArgon2i['threads'] = $threads;
+
+        $minMemoryCost = $threads * 8;
+        if (static::$optionsArgon2i['memory_cost'] < $minMemoryCost) {
+            static::$optionsArgon2i['memory_cost'] = $minMemoryCost;
+        }
     }
 
     /**
@@ -200,12 +210,12 @@ class Crypt
      */
     public static function setOptionBcryptCost(int $rounds): void
     {
-        if ($rounds < self::MIN_ROUNDS || $rounds > self::MAX_ROUNDS) {
+        if ($rounds < static::MIN_ROUNDS || $rounds > static::MAX_ROUNDS) {
             throw new CryptException(
                 \sprintf(
                     'Invalid number of rounds (between %d and %d): %d',
-                    self::MIN_ROUNDS,
-                    self::MAX_ROUNDS,
+                    static::MIN_ROUNDS,
+                    static::MAX_ROUNDS,
                     $rounds
                 )
             );
