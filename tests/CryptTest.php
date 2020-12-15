@@ -215,7 +215,7 @@ class CryptTest extends TestCase
             $this->expectExceptionMessage('Hash Failure');
 
             try {
-                Crypt::setOptionArgon2iMemoryCost(999999);
+                Crypt::setOptionArgon2iMemoryCost(999999999);
                 Crypt::hash('toto');
             } catch (CryptException $e) {
                 throw $e;
@@ -231,7 +231,7 @@ class CryptTest extends TestCase
             $this->expectExceptionMessage('Hash Failure');
 
             try {
-                Crypt::setOptionArgon2iMemoryCost(999999);
+                Crypt::setOptionArgon2iMemoryCost(999999999);
                 Crypt::hash('toto');
             } catch (CryptException $e) {
                 throw $e;
