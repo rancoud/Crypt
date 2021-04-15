@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Rancoud\Crypt\Test;
+namespace tests;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
 use Rancoud\Crypt\Crypt;
 use Rancoud\Crypt\CryptException;
@@ -14,335 +14,12 @@ use Rancoud\Crypt\CryptException;
  */
 class CryptTest extends TestCase
 {
-    public function testHash(): void
-    {
-        try {
-            $hash = Crypt::hash('toto');
-            static::assertNotFalse($hash);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testVerify(): void
-    {
-        try {
-            $hash = Crypt::hash('toto');
-            $result = Crypt::verify('toto', $hash);
-            static::assertTrue($result);
-
-            $hash = Crypt::hash('okok');
-            $result = Crypt::verify('toto', $hash);
-            static::assertFalse($result);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testNeedsRehash(): void
-    {
-        try {
-            $hash = Crypt::hash('toto');
-            $result = Crypt::needsRehash($hash);
-            static::assertFalse($result);
-
-            $currentAlgo = Crypt::getCurrentAlgo();
-            if ($currentAlgo === 'argon2id' || $currentAlgo === 'argon2i') {
-                $hash = str_replace('9$m=65536,t=4,p=1$', '9$m=512,t=1,p=1$', $hash);
-            } else {
-                $hash = str_replace('$2y$12$', '$2y$05$', $hash);
-            }
-            $result = Crypt::needsRehash($hash);
-            static::assertTrue($result);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testGetRandomString(): void
-    {
-        try {
-            $randomString = Crypt::getRandomString();
-            static::assertSame(64, mb_strlen($randomString));
-
-            $randomString = Crypt::getRandomString(105);
-            static::assertSame(105, mb_strlen($randomString));
-        } catch (Exception $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testSetOptionMemoryCost(): void
-    {
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Memory cost is too small: 0 bytes');
-
-        try {
-            Crypt::setOptionArgon2iMemoryCost(128);
-            $options = Crypt::getOptionsArgon2i();
-            static::assertSame(128, $options['memory_cost']);
-
-            Crypt::setOptionArgon2iThreads(2);
-            $options = Crypt::getOptionsArgon2i();
-            static::assertSame(128, $options['memory_cost']);
-
-            Crypt::setOptionArgon2iThreads(24);
-            $options = Crypt::getOptionsArgon2i();
-            static::assertSame(192, $options['memory_cost']);
-
-            Crypt::setOptionArgon2iMemoryCost(0);
-        } catch (CryptException $e) {
-            throw $e;
-        }
-    }
-
-    public function testSetOptionTimeCost(): void
-    {
-        try {
-            Crypt::setOptionArgon2iTimeCost(3);
-            $options = Crypt::getOptionsArgon2i();
-            static::assertSame(3, $options['time_cost']);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Time cost is too small: 0');
-
-        try {
-            Crypt::setOptionArgon2iTimeCost(0);
-        } catch (CryptException $e) {
-            throw $e;
-        }
-    }
-
-    public function testSetOptionThreads(): void
-    {
-        try {
-            Crypt::setOptionArgon2iThreads(5);
-            $options = Crypt::getOptionsArgon2i();
-            static::assertSame(5, $options['threads']);
-            static::assertSame(65536, $options['memory_cost']);
-
-            Crypt::setOptionArgon2iMemoryCost(8);
-            Crypt::setOptionArgon2iThreads(5);
-            $options = Crypt::getOptionsArgon2i();
-            static::assertSame(5, $options['threads']);
-            static::assertSame(5 * 8, $options['memory_cost']);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Number of threads is too small: 0');
-
-        try {
-            Crypt::setOptionArgon2iThreads(0);
-        } catch (CryptException $e) {
-            throw $e;
-        }
-    }
-
-    public function testSetGetCharacters(): void
-    {
-        Crypt::setCharactersForRandomString('aze');
-        $characters = Crypt::getCharactersForRandomString();
-        static::assertSame('aze', $characters);
-    }
-
-    public function testBigPassword(): void
-    {
-        if (defined('PASSWORD_ARGON2ID')) {
-            Crypt::useArgon2id();
-
-            try {
-                $password = Crypt::getRandomString(1000);
-                $hash = Crypt::hash($password);
-                $result = Crypt::verify(mb_substr($password, 0, 1000), $hash);
-                static::assertTrue($result);
-                $result = Crypt::verify(mb_substr($password, 0, 999), $hash);
-                static::assertFalse($result);
-            } catch (Exception $e) {
-                /** @noinspection PhpUnhandledExceptionInspection */
-                throw $e;
-            }
-        }
-
-        if (defined('PASSWORD_ARGON2I')) {
-            Crypt::useArgon2i();
-
-            try {
-                $password = Crypt::getRandomString(1000);
-                $hash = Crypt::hash($password);
-                $result = Crypt::verify(mb_substr($password, 0, 1000), $hash);
-                static::assertTrue($result);
-                $result = Crypt::verify(mb_substr($password, 0, 999), $hash);
-                static::assertFalse($result);
-            } catch (Exception $e) {
-                /** @noinspection PhpUnhandledExceptionInspection */
-                throw $e;
-            }
-        }
-
-        Crypt::useBcrypt();
-
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Password too long for bcrypt (72 max): 1000 chars');
-
-        try {
-            $password = Crypt::getRandomString(1000);
-            Crypt::hash($password);
-        } catch (CryptException $e) {
-            throw $e;
-        } catch (Exception $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testHashFailure(): void
-    {
-        if (defined('PASSWORD_ARGON2ID')) {
-            Crypt::useArgon2id();
-
-            $this->expectException(CryptException::class);
-            $this->expectExceptionMessage('Hash Failure');
-
-            try {
-                Crypt::setOptionArgon2iMemoryCost(999999999);
-                Crypt::hash('toto');
-            } catch (CryptException $e) {
-                throw $e;
-            }
-
-            static::assertTrue(false);
-        }
-
-        if (defined('PASSWORD_ARGON2I')) {
-            Crypt::useArgon2i();
-
-            $this->expectException(CryptException::class);
-            $this->expectExceptionMessage('Hash Failure');
-
-            try {
-                Crypt::setOptionArgon2iMemoryCost(999999999);
-                Crypt::hash('toto');
-            } catch (CryptException $e) {
-                throw $e;
-            }
-
-            static::assertTrue(false);
-        }
-
-        static::assertTrue(true);
-    }
-
-    // bcrypt part
-    public function testHashBcrypt(): void
-    {
-        try {
-            Crypt::useBcrypt();
-            $hash = Crypt::hash('toto');
-            static::assertNotFalse($hash);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testVerifyBcrypt(): void
-    {
-        try {
-            Crypt::useBcrypt();
-            $hash = Crypt::hash('toto');
-            $result = Crypt::verify('toto', $hash);
-            static::assertTrue($result);
-
-            $hash = Crypt::hash('okok');
-            $result = Crypt::verify('toto', $hash);
-            static::assertFalse($result);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testNeedsRehashBcrypt(): void
-    {
-        try {
-            Crypt::useBcrypt();
-            $hash = Crypt::hash('toto');
-            $result = Crypt::needsRehash($hash);
-            static::assertFalse($result);
-
-            $hash = str_replace('$2y$12$', '$2y$05$', $hash);
-            $result = Crypt::needsRehash($hash);
-            static::assertTrue($result);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testSetGetOptionBcryptCost(): void
-    {
-        try {
-            Crypt::setOptionBcryptCost(5);
-            $options = Crypt::getOptionsBcrypt();
-            static::assertSame(5, $options['cost']);
-        } catch (CryptException $e) {
-            /** @noinspection PhpUnhandledExceptionInspection */
-            throw $e;
-        }
-    }
-
-    public function testSetOptionBcryptCostExceptionLowRounds(): void
-    {
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Invalid number of rounds (between 4 and 31): 3');
-
-        try {
-            Crypt::setOptionBcryptCost(3);
-        } catch (CryptException $e) {
-            throw $e;
-        }
-    }
-
-    public function testSetOptionBcryptCostExceptionHighRounds(): void
-    {
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Invalid number of rounds (between 4 and 31): 32');
-
-        try {
-            Crypt::setOptionBcryptCost(32);
-        } catch (CryptException $e) {
-            throw $e;
-        }
-    }
-
-    public function testHashExceptionPasswordTooLong(): void
-    {
-        Crypt::useBcrypt();
-
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Password too long');
-
-        try {
-            Crypt::hash('azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop');
-        } catch (CryptException $e) {
-            throw $e;
-        }
-    }
+    // region Set specific algo
 
     public function testUseArgon2i(): void
     {
         Crypt::useArgon2i();
+
         static::assertSame('argon2i', Crypt::getCurrentAlgo());
     }
 
@@ -350,6 +27,288 @@ class CryptTest extends TestCase
     {
         Crypt::useBcrypt();
         Crypt::useArgon2id();
+
         static::assertSame('argon2id', Crypt::getCurrentAlgo());
     }
+
+    // endregion
+
+    // region Hash / Verify / Needs Rehash
+
+    public function dataCasesGeneric(): array
+    {
+        return [
+            'Argon2id' => [
+                'use_algo' => 'useArgon2id',
+                'password' => 'my_password_argon_2id',
+            ],
+            'Argon2i' => [
+                'use_algo' => 'useArgon2i',
+                'password' => 'my_password_argon_2i',
+            ],
+            'Bcrypt' => [
+                'use_algo' => 'useBcrypt',
+                'password' => 'my_password_bcrypt',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataCasesGeneric
+     *
+     * @param string $useAlgo
+     * @param string $password
+     *
+     * @throws CryptException
+     */
+    public function testHash(string $useAlgo, string $password): void
+    {
+        Crypt::$useAlgo();
+
+        static::assertNotFalse(Crypt::hash($password));
+    }
+
+    /**
+     * @dataProvider dataCasesGeneric
+     *
+     * @param string $useAlgo
+     * @param string $password
+     *
+     * @throws CryptException
+     */
+    public function testVerifyValid(string $useAlgo, string $password): void
+    {
+        Crypt::$useAlgo();
+
+        $hash = Crypt::hash($password);
+        $passwordAgainstHashIsValid = Crypt::verify($password, $hash);
+
+        static::assertTrue($passwordAgainstHashIsValid);
+    }
+
+    /**
+     * @dataProvider dataCasesGeneric
+     *
+     * @param string $useAlgo
+     * @param string $password
+     *
+     * @throws CryptException
+     */
+    public function testVerifyInvalid(string $useAlgo, string $password): void
+    {
+        Crypt::$useAlgo();
+
+        $hash = Crypt::hash($password);
+        $passwordAgainstHashIsNotValid = Crypt::verify('invalid_password', $hash);
+
+        static::assertFalse($passwordAgainstHashIsNotValid);
+    }
+
+    /**
+     * @dataProvider dataCasesGeneric
+     *
+     * @param string $useAlgo
+     * @param string $password
+     *
+     * @throws CryptException
+     */
+    public function testNeedsRehash(string $useAlgo, string $password): void
+    {
+        Crypt::$useAlgo();
+
+        $hash = Crypt::hash($password);
+        $doNotNeedRehash = Crypt::needsRehash($hash);
+
+        static::assertFalse($doNotNeedRehash);
+
+        // modify hash options to trigger "needs Rehash"
+        $currentAlgo = Crypt::getCurrentAlgo();
+        if ($currentAlgo === 'argon2id' || $currentAlgo === 'argon2i') {
+            $hash = \str_replace('9$m=65536,t=4,p=1$', '9$m=512,t=1,p=1$', $hash);
+        } else {
+            $hash = \str_replace('$2y$12$', '$2y$05$', $hash);
+        }
+        $needsRehash = Crypt::needsRehash($hash);
+
+        static::assertTrue($needsRehash);
+    }
+
+    public function dataCasesHashFailure(): array
+    {
+        return [
+            'Argon2id' => [
+                'use_algo'      => 'useArgon2id',
+                'password'      => 'my_password_argon_2id',
+                'error_message' => 'Hash Failure',
+            ],
+            'Argon2i' => [
+                'use_algo'      => 'useArgon2i',
+                'password'      => 'my_password_argon_2i',
+                'error_message' => 'Hash Failure',
+            ],
+            'Bcrypt' => [
+                'use_algo'      => 'useBcrypt',
+                'password'      => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
+                'error_message' => 'Password too long',
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider dataCasesHashFailure
+     *
+     * @param string $useAlgo
+     * @param string $password
+     * @param string $errorMessage
+     *
+     * @throws CryptException
+     */
+    public function testHashFailure(string $useAlgo, string $password, string $errorMessage): void
+    {
+        Crypt::$useAlgo();
+
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage($errorMessage);
+
+        Crypt::setOptionArgon2iMemoryCost(999999999);
+        Crypt::hash($password);
+    }
+
+    // endregion
+
+    // region Options
+
+    /**
+     * @throws CryptException
+     */
+    public function testSetOptionMemoryCost(): void
+    {
+        Crypt::setOptionArgon2iMemoryCost(128);
+        $options = Crypt::getOptionsArgon2i();
+        static::assertSame(128, $options['memory_cost']);
+
+        Crypt::setOptionArgon2iThreads(2);
+        $options = Crypt::getOptionsArgon2i();
+        static::assertSame(128, $options['memory_cost']);
+
+        Crypt::setOptionArgon2iThreads(24);
+        $options = Crypt::getOptionsArgon2i();
+        static::assertSame(192, $options['memory_cost']);
+    }
+
+    public function testSetOptionMemoryCostCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Memory cost is too small: 0 bytes');
+
+        Crypt::setOptionArgon2iMemoryCost(0);
+    }
+
+    /**
+     * @throws CryptException
+     */
+    public function testSetOptionTimeCost(): void
+    {
+        Crypt::setOptionArgon2iTimeCost(3);
+        $options = Crypt::getOptionsArgon2i();
+
+        static::assertSame(3, $options['time_cost']);
+    }
+
+    public function testSetOptionTimeCostCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Time cost is too small: 0');
+
+        Crypt::setOptionArgon2iTimeCost(0);
+    }
+
+    /**
+     * @throws CryptException
+     */
+    public function testSetOptionThreads(): void
+    {
+        Crypt::setOptionArgon2iThreads(5);
+        $options = Crypt::getOptionsArgon2i();
+        static::assertSame(5, $options['threads']);
+        static::assertSame(65536, $options['memory_cost']);
+
+        Crypt::setOptionArgon2iMemoryCost(8);
+        Crypt::setOptionArgon2iThreads(5);
+        $options = Crypt::getOptionsArgon2i();
+        static::assertSame(5, $options['threads']);
+        static::assertSame(5 * 8, $options['memory_cost']);
+    }
+
+    public function testSetOptionThreadsCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Number of threads is too small: 0');
+
+        Crypt::setOptionArgon2iThreads(0);
+    }
+
+    /**
+     * @throws CryptException
+     */
+    public function testSetGetOptionBcryptCost(): void
+    {
+        Crypt::setOptionBcryptCost(5);
+        $options = Crypt::getOptionsBcrypt();
+
+        static::assertSame(5, $options['cost']);
+    }
+
+    public function testSetOptionBcryptCostExceptionLowRounds(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Invalid number of rounds (between 4 and 31): 3');
+
+        Crypt::setOptionBcryptCost(3);
+    }
+
+    public function testSetOptionBcryptCostExceptionHighRounds(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Invalid number of rounds (between 4 and 31): 32');
+
+        Crypt::setOptionBcryptCost(32);
+    }
+
+    // endregion
+
+    // region Random String
+
+    /**
+     * @throws CryptException
+     */
+    public function testSetGetCharacters(): void
+    {
+        Crypt::setCharactersForRandomString('aze');
+        $characters = Crypt::getCharactersForRandomString();
+
+        static::assertSame('aze', $characters);
+    }
+
+    public function testSetGetCharactersCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Characters cannot be empty');
+
+        Crypt::setCharactersForRandomString('');
+    }
+
+    /**
+     * @throws CryptException
+     */
+    public function testGetRandomString(): void
+    {
+        $randomString = Crypt::getRandomString();
+        static::assertSame(64, \mb_strlen($randomString));
+
+        $randomString = Crypt::getRandomString(105);
+        static::assertSame(105, \mb_strlen($randomString));
+    }
+
+    // endregion
 }

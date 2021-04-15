@@ -38,27 +38,6 @@ class Crypt
     protected static string $characters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
     '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
-    public static function useArgon2id(): void
-    {
-        static::$algoFixed = true;
-
-        static::$algoCurrent = static::$algoArgon2id;
-    }
-
-    public static function useArgon2i(): void
-    {
-        static::$algoFixed = true;
-
-        static::$algoCurrent = static::$algoArgon2i;
-    }
-
-    public static function useBcrypt(): void
-    {
-        static::$algoFixed = true;
-
-        static::$algoCurrent = static::$algoBcrypt;
-    }
-
     /**
      * @param string $password
      *
@@ -68,8 +47,6 @@ class Crypt
      */
     public static function hash(string $password): string
     {
-        $string = null;
-
         static::chooseAlgo();
 
         try {
@@ -77,8 +54,7 @@ class Crypt
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsArgon2i);
             } else {
                 if (\mb_strlen($password) > static::MAX_LENGTH_BCRYPT) {
-                    /* @noinspection ThrowRawExceptionInspection */
-                    throw new \Exception('Password too long');
+                    throw new CryptException('Password too long');
                 }
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsBcrypt);
             }
@@ -127,24 +103,7 @@ class Crypt
         return \password_needs_rehash($hash, static::$algoCurrent, static::$optionsBcrypt);
     }
 
-    /**
-     * @param int $length
-     *
-     * @throws \Exception
-     *
-     * @return string
-     */
-    public static function getRandomString(int $length = 64): string
-    {
-        $string = '';
-        $countCharacters = \mb_strlen(static::$characters) - 1;
-
-        for ($i = 0; $i < $length; ++$i) {
-            $string .= static::$characters[\random_int(0, $countCharacters)];
-        }
-
-        return $string;
-    }
+    // region Options
 
     /**
      * @param int $bytes
@@ -233,11 +192,49 @@ class Crypt
         return static::$optionsBcrypt;
     }
 
+    // endregion
+
+    // region Random String
+
+    /**
+     * @param int $length
+     *
+     * @throws CryptException
+     *
+     * @return string
+     */
+    public static function getRandomString(int $length = 64): string
+    {
+        $string = '';
+        $countCharacters = \mb_strlen(static::$characters) - 1;
+
+        try {
+            for ($i = 0; $i < $length; ++$i) {
+                $string .= static::$characters[\random_int(0, $countCharacters)];
+            }
+            // @codeCoverageIgnoreStart
+        } catch (\Exception $e) {
+            /* If an appropriate source of randomness cannot be found, an Exception will be thrown.
+             * The list of randomness: https://www.php.net/manual/en/function.random-int.php
+             */
+            throw new CryptException($e->getMessage(), $e->getCode(), $e->getPrevious());
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $string;
+    }
+
     /**
      * @param string $characters
+     *
+     * @throws CryptException
      */
     public static function setCharactersForRandomString(string $characters): void
     {
+        if ($characters === '') {
+            throw new CryptException('Characters cannot be empty');
+        }
+
         static::$characters = $characters;
     }
 
@@ -249,7 +246,35 @@ class Crypt
         return static::$characters;
     }
 
-    /** @codeCoverageIgnore  */
+    // endregion
+
+    // region Set specific algo
+
+    public static function useArgon2id(): void
+    {
+        static::$algoFixed = true;
+
+        static::$algoCurrent = static::$algoArgon2id;
+    }
+
+    public static function useArgon2i(): void
+    {
+        static::$algoFixed = true;
+
+        static::$algoCurrent = static::$algoArgon2i;
+    }
+
+    public static function useBcrypt(): void
+    {
+        static::$algoFixed = true;
+
+        static::$algoCurrent = static::$algoBcrypt;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * This function is ignore because it depends on how PHP has been built
+     */
     protected static function chooseAlgo(): void
     {
         if (static::$algoFixed) {
@@ -272,4 +297,6 @@ class Crypt
     {
         return static::$algoCurrent;
     }
+
+    // endregion
 }
