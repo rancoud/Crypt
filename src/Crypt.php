@@ -197,20 +197,27 @@ class Crypt
     // region Random String
 
     /**
-     * @param int $length
+     * @param int         $length
+     * @param string|null $characters
      *
      * @throws CryptException
      *
      * @return string
      */
-    public static function getRandomString(int $length = 64): string
+    public static function getRandomString(int $length = 64, ?string $characters = null): string
     {
+        $initialCharacters = null;
+        if ($characters !== null) {
+            $initialCharacters = static::getCharactersForRandomString();
+            static::setCharactersForRandomString($characters);
+        }
+
         $string = '';
         $countCharacters = \mb_strlen(static::$characters) - 1;
 
         try {
             for ($i = 0; $i < $length; ++$i) {
-                $string .= static::$characters[\random_int(0, $countCharacters)];
+                $string .= \mb_substr(static::$characters, \random_int(0, $countCharacters), 1);
             }
             // @codeCoverageIgnoreStart
         } catch (\Exception $e) {
@@ -219,6 +226,10 @@ class Crypt
              */
             throw new CryptException($e->getMessage(), $e->getCode(), $e->getPrevious());
             // @codeCoverageIgnoreEnd
+        } finally {
+            if ($initialCharacters !== null) {
+                static::setCharactersForRandomString($initialCharacters);
+            }
         }
 
         return $string;

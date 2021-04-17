@@ -308,6 +308,34 @@ class CryptTest extends TestCase
 
         $randomString = Crypt::getRandomString(105);
         static::assertSame(105, \mb_strlen($randomString));
+
+        Crypt::setCharactersForRandomString('‍привет');
+        $randomString = Crypt::getRandomString(10);
+        static::assertSame(10, \mb_strlen($randomString));
+
+        Crypt::setCharactersForRandomString('صباح الخير');
+        $randomString = Crypt::getRandomString(15);
+        static::assertSame(15, \mb_strlen($randomString));
+
+        Crypt::setCharactersForRandomString('숍訊昱穿刷奄剔㏆穽侘㈊섞昌侄從쒜');
+        $randomString = Crypt::getRandomString(20);
+        static::assertSame(20, \mb_strlen($randomString));
+
+        $randomString = Crypt::getRandomString(25, 'a');
+        static::assertSame(25, \mb_strlen($randomString));
+        static::assertSame('숍訊昱穿刷奄剔㏆穽侘㈊섞昌侄從쒜', Crypt::getCharactersForRandomString());
+        static::assertNotSame('a', Crypt::getCharactersForRandomString());
+    }
+
+    /**
+     * @throws CryptException
+     */
+    public function testGetRandomStringCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Characters cannot be empty');
+
+        $randomString = Crypt::getRandomString(25, '');
     }
 
     // endregion

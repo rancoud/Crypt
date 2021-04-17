@@ -29,23 +29,30 @@ Crypt::useBcrypt();
 ```
 
 ## Crypt
-### Static Methods  
-* getCharactersForRandomString(): string  
-* getCurrentAlgo(): int  
-* getOptionsArgon2i(): array  
-* getOptionsBcrypt(): array  
-* getRandomString([length: int = 64]): string  
-* hash(password: string): string  
-* needsRehash(hash: string): bool  
-* setCharactersForRandomString(characters: string): void  
-* setOptionArgon2iMemoryCost(bytes: int): void  
-* setOptionArgon2iThreads(threads: int): void  
-* setOptionArgon2iTimeCost(time: int): void  
-* setOptionBcryptCost(rounds: int): void  
-* useArgon2id(): void  
-* useArgon2i(): void  
-* useBcrypt(): void  
-* verify(password: string, hash: string): bool  
+### Static Methods
+#### Main functions
+* hash(password: string): string
+* needsRehash(hash: string): bool
+* verify(password: string, hash: string): bool
+
+#### Algos
+* getCurrentAlgo(): int
+* useArgon2id(): void
+* useArgon2i(): void
+* useBcrypt(): void
+
+#### Options
+* setOptionArgon2iMemoryCost(bytes: int): void
+* setOptionArgon2iThreads(threads: int): void
+* setOptionArgon2iTimeCost(time: int): void
+* setOptionBcryptCost(rounds: int): void
+* getOptionsArgon2i(): array
+* getOptionsBcrypt(): array
+
+#### Random string
+* getRandomString([length: int = 64], [characters: ?string = null]): string
+* getCharactersForRandomString(): string
+* setCharactersForRandomString(characters: string): void
 
 ## How to Dev
 `composer ci` for php-cs-fixer and phpunit and coverage  
