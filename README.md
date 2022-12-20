@@ -4,7 +4,7 @@
 [![Packagist Version](https://img.shields.io/packagist/v/rancoud/crypt)](https://packagist.org/packages/rancoud/crypt)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/rancoud/crypt)](https://packagist.org/packages/rancoud/crypt)
 [![Composer dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://github.com/rancoud/Crypt/blob/master/composer.json)
-[![Test workflow](https://img.shields.io/github/actions/workflow/status/rancoud/crypt/test.yml?branch=master)](https://img.shields.io/github/actions/workflow/status/rancoud/crypt/sub_directory/test.yml?branch=master)
+[![Test workflow](https://img.shields.io/github/actions/workflow/status/rancoud/crypt/test.yml?branch=master)](https://github.com/rancoud/crypt/actions/workflows/test.yml)
 [![Codecov](https://img.shields.io/codecov/c/github/rancoud/crypt?logo=codecov)](https://codecov.io/gh/rancoud/crypt)
 
 Crypt using Argon2id by default with Argon2i and bcrypt in fallback.  
