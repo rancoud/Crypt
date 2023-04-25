@@ -335,7 +335,7 @@ class CryptTest extends TestCase
         $this->expectException(CryptException::class);
         $this->expectExceptionMessage('Characters cannot be empty');
 
-        $randomString = Crypt::getRandomString(25, '');
+        Crypt::getRandomString(25, '');
     }
 
     // endregion
