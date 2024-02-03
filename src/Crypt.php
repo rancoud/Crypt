@@ -204,7 +204,7 @@ class Crypt
      *
      * @return string
      */
-    public static function getRandomString(int $length = 64, string $characters = null): string
+    public static function getRandomString(int $length = 64, ?string $characters = null): string
     {
         $initialCharacters = null;
         if ($characters !== null) {
