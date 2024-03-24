@@ -36,7 +36,7 @@ class Crypt
     ];
 
     protected static string $characters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
-    '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+        '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
     /**
      * @param string $password
