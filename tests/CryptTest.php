@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Rancoud\Crypt\Crypt;
 use Rancoud\Crypt\CryptException;
@@ -12,6 +14,7 @@ use Rancoud\Crypt\CryptException;
  * @runTestsInSeparateProcesses
  * Class CryptTest.
  */
+#[RunTestsInSeparateProcesses]
 class CryptTest extends TestCase
 {
     // region Set specific algo
@@ -35,19 +38,19 @@ class CryptTest extends TestCase
 
     // region Hash / Verify / Needs Rehash
 
-    public function dataCasesGeneric(): array
+    public static function dataCasesGeneric(): array
     {
         return [
             'Argon2id' => [
-                'use_algo' => 'useArgon2id',
+                'useAlgo'  => 'useArgon2id',
                 'password' => 'my_password_argon_2id',
             ],
             'Argon2i' => [
-                'use_algo' => 'useArgon2i',
+                'useAlgo'  => 'useArgon2i',
                 'password' => 'my_password_argon_2i',
             ],
             'Bcrypt' => [
-                'use_algo' => 'useBcrypt',
+                'useAlgo'  => 'useBcrypt',
                 'password' => 'my_password_bcrypt',
             ],
         ];
@@ -61,6 +64,7 @@ class CryptTest extends TestCase
      *
      * @throws CryptException
      */
+    #[DataProvider('dataCasesGeneric')]
     public function testHash(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -76,6 +80,7 @@ class CryptTest extends TestCase
      *
      * @throws CryptException
      */
+    #[DataProvider('dataCasesGeneric')]
     public function testVerifyValid(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -94,6 +99,7 @@ class CryptTest extends TestCase
      *
      * @throws CryptException
      */
+    #[DataProvider('dataCasesGeneric')]
     public function testVerifyInvalid(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -112,6 +118,7 @@ class CryptTest extends TestCase
      *
      * @throws CryptException
      */
+    #[DataProvider('dataCasesGeneric')]
     public function testNeedsRehash(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -133,23 +140,23 @@ class CryptTest extends TestCase
         static::assertTrue($needsRehash);
     }
 
-    public function dataCasesHashFailure(): array
+    public static function dataCasesHashFailure(): array
     {
         return [
             'Argon2id' => [
-                'use_algo'      => 'useArgon2id',
-                'password'      => 'my_password_argon_2id',
-                'error_message' => 'Hash Failure',
+                'useAlgo'      => 'useArgon2id',
+                'password'     => 'my_password_argon_2id',
+                'errorMessage' => 'Hash Failure',
             ],
             'Argon2i' => [
-                'use_algo'      => 'useArgon2i',
-                'password'      => 'my_password_argon_2i',
-                'error_message' => 'Hash Failure',
+                'useAlgo'      => 'useArgon2i',
+                'password'     => 'my_password_argon_2i',
+                'errorMessage' => 'Hash Failure',
             ],
             'Bcrypt' => [
-                'use_algo'      => 'useBcrypt',
-                'password'      => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
-                'error_message' => 'Password too long',
+                'useAlgo'      => 'useBcrypt',
+                'password'     => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
+                'errorMessage' => 'Password too long',
             ]
         ];
     }
@@ -163,6 +170,7 @@ class CryptTest extends TestCase
      *
      * @throws CryptException
      */
+    #[DataProvider('dataCasesHashFailure')]
     public function testHashFailure(string $useAlgo, string $password, string $errorMessage): void
     {
         Crypt::$useAlgo();
