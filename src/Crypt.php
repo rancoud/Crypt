@@ -39,6 +39,8 @@ class Crypt
         '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
     /**
+     * Hashs the password according to the selected algorithm.
+     *
      * @param string $password
      *
      * @throws CryptException
@@ -77,6 +79,8 @@ class Crypt
     }
 
     /**
+     * Checks if password and hash match.
+     *
      * @param string $password
      * @param string $hash
      *
@@ -88,6 +92,8 @@ class Crypt
     }
 
     /**
+     * Checks whether the hash needs to be rehash to match the selected algorithm and options.
+     *
      * @param string $hash
      *
      * @return bool
@@ -106,6 +112,9 @@ class Crypt
     // region Options
 
     /**
+     * Sets memory cost for `argon2id` and `argon2i`.<br>
+     * Must be equal or greater than 8.
+     *
      * @param int $bytes
      *
      * @throws CryptException
@@ -125,6 +134,9 @@ class Crypt
     }
 
     /**
+     * Sets time cost for `argon2id` and `argon2i`.<br>
+     * Must be equal or greater than 1.
+     *
      * @param int $time
      *
      * @throws CryptException
@@ -139,6 +151,9 @@ class Crypt
     }
 
     /**
+     * Sets number of threads for `argon2id` and `argon2i`.<br>
+     * Must be equal or greater than 1.
+     *
      * @param int $threads
      *
      * @throws CryptException
@@ -157,6 +172,8 @@ class Crypt
     }
 
     /**
+     * Returns options for `argon2id` and `argon2i`.
+     *
      * @return array
      */
     public static function getOptionsArgon2i(): array
@@ -165,6 +182,9 @@ class Crypt
     }
 
     /**
+     * Sets rounds cost for `2y` (bcrypt).<br>
+     * Must be between 4 and 31.
+     *
      * @param int $rounds
      *
      * @throws CryptException
@@ -185,6 +205,8 @@ class Crypt
     }
 
     /**
+     * Returns options for `2y` (bcrypt).
+     *
      * @return array
      */
     public static function getOptionsBcrypt(): array
@@ -197,6 +219,10 @@ class Crypt
     // region Random String
 
     /**
+     * Returns a fixed-size string containing random characters from the preselection.<br>
+     * The default character pool is !"#$%&\'()*+,-./0123456789:;<=>?@
+     * ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~.
+     *
      * @param int         $length
      * @param string|null $characters
      *
@@ -236,6 +262,8 @@ class Crypt
     }
 
     /**
+     * Sets the character pool.
+     *
      * @param string $characters
      *
      * @throws CryptException
@@ -250,6 +278,8 @@ class Crypt
     }
 
     /**
+     * Returns the character pool.
+     *
      * @return string
      */
     public static function getCharactersForRandomString(): string
@@ -261,6 +291,11 @@ class Crypt
 
     // region Set specific algo
 
+    /**
+     * Sets the algorithm to `argon2id`.
+     *
+     * @return void
+     */
     public static function useArgon2id(): void
     {
         static::$algoFixed = true;
@@ -268,6 +303,11 @@ class Crypt
         static::$algoCurrent = static::$algoArgon2id;
     }
 
+    /**
+     * Sets the algorithm to `argon2i`.
+     *
+     * @return void
+     */
     public static function useArgon2i(): void
     {
         static::$algoFixed = true;
@@ -275,6 +315,11 @@ class Crypt
         static::$algoCurrent = static::$algoArgon2i;
     }
 
+    /**
+     * Sets the algorithm to `2y` (bcrypt).
+     *
+     * @return void
+     */
     public static function useBcrypt(): void
     {
         static::$algoFixed = true;
@@ -283,8 +328,13 @@ class Crypt
     }
 
     /**
+     * Selects an algorithm if not defined by the user, in the following
+     * order: `argon2id` or `argon2i` or `2y` (bcrypt).
+     *
      * @codeCoverageIgnore
-     * This function is ignore because it depends on how PHP has been built
+     * This function is ignore because it depends on how PHP has been built.
+     *
+     * @return void
      */
     protected static function chooseAlgo(): void
     {
@@ -302,6 +352,9 @@ class Crypt
     }
 
     /**
+     * Returns current algorithm.<br>
+     * Possible values are `argon2id`, `argon2i` or `2y`.
+     *
      * @return string
      */
     public static function getCurrentAlgo(): string
