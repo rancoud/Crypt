@@ -9,32 +9,111 @@ namespace Rancoud\Crypt;
  */
 class Crypt
 {
+    /**
+     * Maximum characters length for `2y` (bcrypt) to process.<br>
+     * Bcrypt algorithm can not use more than 72 characters.
+     *
+     * @var int
+     */
     protected const MAX_LENGTH_BCRYPT = 72;
 
+    /**
+     * Minimum value for memory cost.
+     *
+     * @var int
+     */
     protected const MIN_MEMORY_COST = 8;
+
+    /**
+     * Minimum value for time cost.
+     *
+     * @var int
+     */
     protected const MIN_TIME_COST = 1;
+
+    /**
+     * Minimum value for threads.
+     *
+     * @var int
+     */
     protected const MIN_THREADS = 1;
 
+    /**
+     * Minimum value for rounds.
+     *
+     * @var int
+     */
     protected const MIN_ROUNDS = 4;
+
+    /**
+     * Maximum value for rounds.
+     *
+     * @var int
+     */
     protected const MAX_ROUNDS = 31;
 
-    protected static string $algoArgon2id = 'argon2id'; // PASSWORD_ARGON2ID
-    protected static string $algoArgon2i = 'argon2i'; // PASSWORD_ARGON2I
-    protected static string $algoBcrypt = '2y'; // PASSWORD_BCRYPT
+    /**
+     * Value of PASSWORD_ARGON2ID.
+     *
+     * @var string
+     */
+    protected static string $algoArgon2id = 'argon2id';
 
-    protected static string $algoCurrent = 'argon2id'; // by default use ARGON2ID
+    /**
+     * Value of PASSWORD_ARGON2I.
+     *
+     * @var string
+     */
+    protected static string $algoArgon2i = 'argon2i';
+
+    /**
+     * Value of PASSWORD_BCRYPT.
+     *
+     * @var string
+     */
+    protected static string $algoBcrypt = '2y';
+
+    /**
+     * Default algorithm to use is `argon2id`.
+     *
+     * @var string
+     */
+    protected static string $algoCurrent = 'argon2id';
+
+    /**
+     * By default algorithm is not fixed by the user.
+     *
+     * @var bool
+     */
     protected static bool $algoFixed = false;
 
+    /**
+     * Default option values for `argon2i`.<br>
+     * Use PASSWORD_ARGON2_DEFAULT_MEMORY_COST, PASSWORD_ARGON2_DEFAULT_TIME_COST
+     * and PASSWORD_ARGON2_DEFAULT_THREADS.
+     *
+     * @var array
+     */
     protected static array $optionsArgon2i = [
-        'memory_cost' => 65536, // PASSWORD_ARGON2_DEFAULT_MEMORY_COST
-        'time_cost'   => 4, // PASSWORD_ARGON2_DEFAULT_TIME_COST
-        'threads'     => 1, // PASSWORD_ARGON2_DEFAULT_THREADS
+        'memory_cost' => 65536,
+        'time_cost'   => 4,
+        'threads'     => 1,
     ];
 
+    /**
+     * Default option values for `2y` (bcrypt).
+     *
+     * @var array
+     */
     protected static array $optionsBcrypt = [
         'cost' => 12,
     ];
 
+    /**
+     * Default pool of characters.
+     *
+     * @var string
+     */
     protected static string $characters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
         '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
