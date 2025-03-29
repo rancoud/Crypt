@@ -9,36 +9,117 @@ namespace Rancoud\Crypt;
  */
 class Crypt
 {
+    /**
+     * Maximum characters length for `2y` (bcrypt) to process.<br>
+     * Bcrypt algorithm can not use more than 72 characters.
+     *
+     * @var int
+     */
     protected const MAX_LENGTH_BCRYPT = 72;
 
+    /**
+     * Minimum value for memory cost.
+     *
+     * @var int
+     */
     protected const MIN_MEMORY_COST = 8;
+
+    /**
+     * Minimum value for time cost.
+     *
+     * @var int
+     */
     protected const MIN_TIME_COST = 1;
+
+    /**
+     * Minimum value for threads.
+     *
+     * @var int
+     */
     protected const MIN_THREADS = 1;
 
+    /**
+     * Minimum value for rounds.
+     *
+     * @var int
+     */
     protected const MIN_ROUNDS = 4;
+
+    /**
+     * Maximum value for rounds.
+     *
+     * @var int
+     */
     protected const MAX_ROUNDS = 31;
 
-    protected static string $algoArgon2id = 'argon2id'; // PASSWORD_ARGON2ID
-    protected static string $algoArgon2i = 'argon2i'; // PASSWORD_ARGON2I
-    protected static string $algoBcrypt = '2y'; // PASSWORD_BCRYPT
+    /**
+     * Value of PASSWORD_ARGON2ID.
+     *
+     * @var string
+     */
+    protected static string $algoArgon2id = 'argon2id';
 
-    protected static string $algoCurrent = 'argon2id'; // by default use ARGON2ID
+    /**
+     * Value of PASSWORD_ARGON2I.
+     *
+     * @var string
+     */
+    protected static string $algoArgon2i = 'argon2i';
+
+    /**
+     * Value of PASSWORD_BCRYPT.
+     *
+     * @var string
+     */
+    protected static string $algoBcrypt = '2y';
+
+    /**
+     * Default algorithm to use is `argon2id`.
+     *
+     * @var string
+     */
+    protected static string $algoCurrent = 'argon2id';
+
+    /**
+     * By default algorithm is not fixed by the user.
+     *
+     * @var bool
+     */
     protected static bool $algoFixed = false;
 
+    /**
+     * Default option values for `argon2i` and `argon2id`.<br>
+     * Use PASSWORD_ARGON2_DEFAULT_MEMORY_COST, PASSWORD_ARGON2_DEFAULT_TIME_COST
+     * and PASSWORD_ARGON2_DEFAULT_THREADS.
+     *
+     * @var array
+     */
     protected static array $optionsArgon2i = [
-        'memory_cost' => 65536, // PASSWORD_ARGON2_DEFAULT_MEMORY_COST
-        'time_cost'   => 4, // PASSWORD_ARGON2_DEFAULT_TIME_COST
-        'threads'     => 1, // PASSWORD_ARGON2_DEFAULT_THREADS
+        'memory_cost' => 65536,
+        'time_cost'   => 4,
+        'threads'     => 1,
     ];
 
+    /**
+     * Default option values for `2y` (bcrypt).
+     *
+     * @var array
+     */
     protected static array $optionsBcrypt = [
         'cost' => 12,
     ];
 
+    /**
+     * Default pool of characters.
+     *
+     * @var string
+     */
     protected static string $characters = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ' .
         '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
     /**
+     * Hashs the password according to the selected algorithm.
+     *
      * @param string $password
      *
      * @throws CryptException
@@ -77,6 +158,8 @@ class Crypt
     }
 
     /**
+     * Checks if password and hash match.
+     *
      * @param string $password
      * @param string $hash
      *
@@ -88,6 +171,8 @@ class Crypt
     }
 
     /**
+     * Checks whether the hash needs to be rehash to match the selected algorithm and options.
+     *
      * @param string $hash
      *
      * @return bool
@@ -106,6 +191,9 @@ class Crypt
     // region Options
 
     /**
+     * Sets memory cost for `argon2id` and `argon2i`.<br>
+     * Must be equal or greater than 8.
+     *
      * @param int $bytes
      *
      * @throws CryptException
@@ -125,6 +213,9 @@ class Crypt
     }
 
     /**
+     * Sets time cost for `argon2id` and `argon2i`.<br>
+     * Must be equal or greater than 1.
+     *
      * @param int $time
      *
      * @throws CryptException
@@ -139,6 +230,9 @@ class Crypt
     }
 
     /**
+     * Sets number of threads for `argon2id` and `argon2i`.<br>
+     * Must be equal or greater than 1.
+     *
      * @param int $threads
      *
      * @throws CryptException
@@ -157,6 +251,8 @@ class Crypt
     }
 
     /**
+     * Returns options for `argon2id` and `argon2i`.
+     *
      * @return array
      */
     public static function getOptionsArgon2i(): array
@@ -165,6 +261,9 @@ class Crypt
     }
 
     /**
+     * Sets rounds cost for `2y` (bcrypt).<br>
+     * Must be between 4 and 31.
+     *
      * @param int $rounds
      *
      * @throws CryptException
@@ -185,6 +284,8 @@ class Crypt
     }
 
     /**
+     * Returns options for `2y` (bcrypt).
+     *
      * @return array
      */
     public static function getOptionsBcrypt(): array
@@ -197,6 +298,10 @@ class Crypt
     // region Random String
 
     /**
+     * Returns a fixed-size string containing random characters from the preselection.<br>
+     * The default character pool is !"#$%&\'()*+,-./0123456789:;<=>?@
+     * ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~.
+     *
      * @param int         $length
      * @param string|null $characters
      *
@@ -236,6 +341,8 @@ class Crypt
     }
 
     /**
+     * Sets the character pool.
+     *
      * @param string $characters
      *
      * @throws CryptException
@@ -250,6 +357,8 @@ class Crypt
     }
 
     /**
+     * Returns the character pool.
+     *
      * @return string
      */
     public static function getCharactersForRandomString(): string
@@ -259,8 +368,13 @@ class Crypt
 
     // endregion
 
-    // region Set specific algo
+    // region Set specific algorithm
 
+    /**
+     * Sets the algorithm to `argon2id`.
+     *
+     * @return void
+     */
     public static function useArgon2id(): void
     {
         static::$algoFixed = true;
@@ -268,6 +382,11 @@ class Crypt
         static::$algoCurrent = static::$algoArgon2id;
     }
 
+    /**
+     * Sets the algorithm to `argon2i`.
+     *
+     * @return void
+     */
     public static function useArgon2i(): void
     {
         static::$algoFixed = true;
@@ -275,6 +394,11 @@ class Crypt
         static::$algoCurrent = static::$algoArgon2i;
     }
 
+    /**
+     * Sets the algorithm to `2y` (bcrypt).
+     *
+     * @return void
+     */
     public static function useBcrypt(): void
     {
         static::$algoFixed = true;
@@ -283,8 +407,13 @@ class Crypt
     }
 
     /**
+     * Selects an algorithm if not defined by the user, in the following
+     * order: `argon2id` or `argon2i` or `2y` (bcrypt).
+     *
      * @codeCoverageIgnore
-     * This function is ignore because it depends on how PHP has been built
+     * This function is ignore because it depends on how PHP has been built.
+     *
+     * @return void
      */
     protected static function chooseAlgo(): void
     {
@@ -302,6 +431,9 @@ class Crypt
     }
 
     /**
+     * Returns current algorithm.<br>
+     * Possible values are `argon2id`, `argon2i` or `2y`.
+     *
      * @return string
      */
     public static function getCurrentAlgo(): string
