@@ -105,7 +105,7 @@ public static function getOptionsBcrypt(): array
 
 ### Random string
 Returns a fixed-size string containing random characters from the preselection.  
-The default character pool is !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_``abcdefghijklmnopqrstuvwxyz{|}~.
+The default character pool is `!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_``abcdefghijklmnopqrstuvwxyz{|}~`.
 ```php
 public static function getRandomString(int $length = 64, ?string $characters = null): string
 ```
