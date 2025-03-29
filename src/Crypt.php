@@ -88,7 +88,7 @@ class Crypt
     protected static bool $algoFixed = false;
 
     /**
-     * Default option values for `argon2i`.<br>
+     * Default option values for `argon2i` and `argon2id`.<br>
      * Use PASSWORD_ARGON2_DEFAULT_MEMORY_COST, PASSWORD_ARGON2_DEFAULT_TIME_COST
      * and PASSWORD_ARGON2_DEFAULT_THREADS.
      *
@@ -368,7 +368,7 @@ class Crypt
 
     // endregion
 
-    // region Set specific algo
+    // region Set specific algorithm
 
     /**
      * Sets the algorithm to `argon2id`.
