@@ -59,9 +59,6 @@ class CryptTest extends TestCase
     /**
      * @dataProvider dataCasesGeneric
      *
-     * @param string $useAlgo
-     * @param string $password
-     *
      * @throws CryptException
      */
     #[DataProvider('dataCasesGeneric')]
@@ -74,9 +71,6 @@ class CryptTest extends TestCase
 
     /**
      * @dataProvider dataCasesGeneric
-     *
-     * @param string $useAlgo
-     * @param string $password
      *
      * @throws CryptException
      */
@@ -94,9 +88,6 @@ class CryptTest extends TestCase
     /**
      * @dataProvider dataCasesGeneric
      *
-     * @param string $useAlgo
-     * @param string $password
-     *
      * @throws CryptException
      */
     #[DataProvider('dataCasesGeneric')]
@@ -112,9 +103,6 @@ class CryptTest extends TestCase
 
     /**
      * @dataProvider dataCasesGeneric
-     *
-     * @param string $useAlgo
-     * @param string $password
      *
      * @throws CryptException
      */
@@ -163,10 +151,6 @@ class CryptTest extends TestCase
 
     /**
      * @dataProvider dataCasesHashFailure
-     *
-     * @param string $useAlgo
-     * @param string $password
-     * @param string $errorMessage
      *
      * @throws CryptException
      */
