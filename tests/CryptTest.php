@@ -38,30 +38,28 @@ class CryptTest extends TestCase
 
     // region Hash / Verify / Needs Rehash
 
-    public static function dataCasesGeneric(): array
+    public static function provideGenericDataCases(): iterable
     {
-        return [
-            'Argon2id' => [
-                'useAlgo'  => 'useArgon2id',
-                'password' => 'my_password_argon_2id',
-            ],
-            'Argon2i' => [
-                'useAlgo'  => 'useArgon2i',
-                'password' => 'my_password_argon_2i',
-            ],
-            'Bcrypt' => [
-                'useAlgo'  => 'useBcrypt',
-                'password' => 'my_password_bcrypt',
-            ],
+        yield 'Argon2id' => [
+            'useAlgo'  => 'useArgon2id',
+            'password' => 'my_password_argon_2id',
+        ];
+        yield 'Argon2i' => [
+            'useAlgo'  => 'useArgon2i',
+            'password' => 'my_password_argon_2i',
+        ];
+        yield 'Bcrypt' => [
+            'useAlgo'  => 'useBcrypt',
+            'password' => 'my_password_bcrypt',
         ];
     }
 
     /**
-     * @dataProvider dataCasesGeneric
+     * @dataProvider provideGenericDataCases
      *
      * @throws CryptException
      */
-    #[DataProvider('dataCasesGeneric')]
+    #[DataProvider('provideGenericDataCases')]
     public function testHash(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -70,11 +68,11 @@ class CryptTest extends TestCase
     }
 
     /**
-     * @dataProvider dataCasesGeneric
+     * @dataProvider provideGenericDataCases
      *
      * @throws CryptException
      */
-    #[DataProvider('dataCasesGeneric')]
+    #[DataProvider('provideGenericDataCases')]
     public function testVerifyValid(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -86,11 +84,11 @@ class CryptTest extends TestCase
     }
 
     /**
-     * @dataProvider dataCasesGeneric
+     * @dataProvider provideGenericDataCases
      *
      * @throws CryptException
      */
-    #[DataProvider('dataCasesGeneric')]
+    #[DataProvider('provideGenericDataCases')]
     public function testVerifyInvalid(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -102,11 +100,11 @@ class CryptTest extends TestCase
     }
 
     /**
-     * @dataProvider dataCasesGeneric
+     * @dataProvider provideGenericDataCases
      *
      * @throws CryptException
      */
-    #[DataProvider('dataCasesGeneric')]
+    #[DataProvider('provideGenericDataCases')]
     public function testNeedsRehash(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -128,29 +126,28 @@ class CryptTest extends TestCase
         static::assertTrue($needsRehash);
     }
 
-    public static function dataCasesHashFailure(): array
+    public static function provideHashFailureDataCases(): iterable
     {
-        return [
-            'Argon2id' => [
-                'useAlgo'      => 'useArgon2id',
-                'password'     => 'my_password_argon_2id',
-                'errorMessage' => 'Hash Failure',
-            ],
-            'Argon2i' => [
-                'useAlgo'      => 'useArgon2i',
-                'password'     => 'my_password_argon_2i',
-                'errorMessage' => 'Hash Failure',
-            ],
-            'Bcrypt' => [
-                'useAlgo'      => 'useBcrypt',
-                'password'     => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
-                'errorMessage' => 'Password too long',
-            ]
+        yield 'Argon2id' => [
+            'useAlgo'      => 'useArgon2id',
+            'password'     => 'my_password_argon_2id',
+            'errorMessage' => 'Hash Failure',
         ];
+        yield 'Argon2i' => [
+            'useAlgo'      => 'useArgon2i',
+            'password'     => 'my_password_argon_2i',
+            'errorMessage' => 'Hash Failure',
+        ];
+        yield 'Bcrypt' => [
+            'useAlgo'      => 'useBcrypt',
+            'password'     => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
+            'errorMessage' => 'Password too long',
+        ]
+        ;
     }
 
     /**
-     * @dataProvider dataCasesHashFailure
+     * @dataProvider provideHashFailureDataCases
      *
      * @throws CryptException
      */

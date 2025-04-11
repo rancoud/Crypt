@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Rancoud\Crypt;
 
+use Exception;
+use Throwable;
+
 /**
  * Class Crypt.
  */
@@ -107,7 +110,7 @@ class Crypt
                 }
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsBcrypt);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($e->getMessage() === 'Password too long') {
                 throw new CryptException(
                     \sprintf(
@@ -118,7 +121,7 @@ class Crypt
                 );
             }
             throw new CryptException('Hash Failure: ' . $e->getMessage());
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             throw new CryptException('Hash Failure: ' . $t->getMessage());
         }
 
@@ -267,7 +270,7 @@ class Crypt
                 $string .= \mb_substr(static::$characters, \random_int(0, $countCharacters), 1);
             }
             // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /* If an appropriate source of randomness cannot be found, an Exception will be thrown.
              * The list of randomness: https://www.php.net/manual/en/function.random-int.php
              */
@@ -339,6 +342,15 @@ class Crypt
     }
 
     /**
+     * Returns current algorithm.<br>
+     * Possible values are `argon2id`, `argon2i` or `2y`.
+     */
+    public static function getCurrentAlgo(): string
+    {
+        return static::$algoCurrent;
+    }
+
+    /**
      * Selects an algorithm if not defined by the user, in the following
      * order: `argon2id` or `argon2i` or `2y` (bcrypt).
      *
@@ -358,15 +370,6 @@ class Crypt
         } else {
             static::$algoCurrent = static::$algoBcrypt;
         }
-    }
-
-    /**
-     * Returns current algorithm.<br>
-     * Possible values are `argon2id`, `argon2i` or `2y`.
-     */
-    public static function getCurrentAlgo(): string
-    {
-        return static::$algoCurrent;
     }
 
     // endregion
