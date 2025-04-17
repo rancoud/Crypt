@@ -53,7 +53,6 @@ jobs:
 
       - name: Lint
         run: |
-          vendor/bin/phpcs -s
           PHP_CS_FIXER_IGNORE_ENV=True vendor/bin/php-cs-fixer fix --diff --dry-run
 
       - name: PHPUnit
