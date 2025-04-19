@@ -13,6 +13,8 @@ use Rancoud\Crypt\CryptException;
 /**
  * @runTestsInSeparateProcesses
  * Class CryptTest.
+ *
+ * @internal
  */
 #[RunTestsInSeparateProcesses]
 class CryptTest extends TestCase
@@ -38,30 +40,30 @@ class CryptTest extends TestCase
 
     // region Hash / Verify / Needs Rehash
 
-    public static function dataCasesGeneric(): array
+    public static function provideGenericDataCases(): iterable
     {
-        return [
-            'Argon2id' => [
-                'useAlgo'  => 'useArgon2id',
-                'password' => 'my_password_argon_2id',
-            ],
-            'Argon2i' => [
-                'useAlgo'  => 'useArgon2i',
-                'password' => 'my_password_argon_2i',
-            ],
-            'Bcrypt' => [
-                'useAlgo'  => 'useBcrypt',
-                'password' => 'my_password_bcrypt',
-            ],
+        yield 'Argon2id' => [
+            'useAlgo'  => 'useArgon2id',
+            'password' => 'my_password_argon_2id',
+        ];
+
+        yield 'Argon2i' => [
+            'useAlgo'  => 'useArgon2i',
+            'password' => 'my_password_argon_2i',
+        ];
+
+        yield 'Bcrypt' => [
+            'useAlgo'  => 'useBcrypt',
+            'password' => 'my_password_bcrypt',
         ];
     }
 
     /**
-     * @dataProvider dataCasesGeneric
+     * @dataProvider provideGenericDataCases
      *
      * @throws CryptException
      */
-    #[DataProvider('dataCasesGeneric')]
+    #[DataProvider('provideGenericDataCases')]
     public function testHash(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -70,11 +72,11 @@ class CryptTest extends TestCase
     }
 
     /**
-     * @dataProvider dataCasesGeneric
+     * @dataProvider provideGenericDataCases
      *
      * @throws CryptException
      */
-    #[DataProvider('dataCasesGeneric')]
+    #[DataProvider('provideGenericDataCases')]
     public function testVerifyValid(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -86,11 +88,11 @@ class CryptTest extends TestCase
     }
 
     /**
-     * @dataProvider dataCasesGeneric
+     * @dataProvider provideGenericDataCases
      *
      * @throws CryptException
      */
-    #[DataProvider('dataCasesGeneric')]
+    #[DataProvider('provideGenericDataCases')]
     public function testVerifyInvalid(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -102,11 +104,11 @@ class CryptTest extends TestCase
     }
 
     /**
-     * @dataProvider dataCasesGeneric
+     * @dataProvider provideGenericDataCases
      *
      * @throws CryptException
      */
-    #[DataProvider('dataCasesGeneric')]
+    #[DataProvider('provideGenericDataCases')]
     public function testNeedsRehash(string $useAlgo, string $password): void
     {
         Crypt::$useAlgo();
@@ -128,29 +130,29 @@ class CryptTest extends TestCase
         static::assertTrue($needsRehash);
     }
 
-    public static function dataCasesHashFailure(): array
+    public static function provideHashFailureDataCases(): iterable
     {
-        return [
-            'Argon2id' => [
-                'useAlgo'      => 'useArgon2id',
-                'password'     => 'my_password_argon_2id',
-                'errorMessage' => 'Hash Failure',
-            ],
-            'Argon2i' => [
-                'useAlgo'      => 'useArgon2i',
-                'password'     => 'my_password_argon_2i',
-                'errorMessage' => 'Hash Failure',
-            ],
-            'Bcrypt' => [
-                'useAlgo'      => 'useBcrypt',
-                'password'     => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
-                'errorMessage' => 'Password too long',
-            ]
+        yield 'Argon2id' => [
+            'useAlgo'      => 'useArgon2id',
+            'password'     => 'my_password_argon_2id',
+            'errorMessage' => 'Hash Failure',
+        ];
+
+        yield 'Argon2i' => [
+            'useAlgo'      => 'useArgon2i',
+            'password'     => 'my_password_argon_2i',
+            'errorMessage' => 'Hash Failure',
+        ];
+
+        yield 'Bcrypt' => [
+            'useAlgo'      => 'useBcrypt',
+            'password'     => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
+            'errorMessage' => 'Password too long',
         ];
     }
 
     /**
-     * @dataProvider dataCasesHashFailure
+     * @dataProvider provideHashFailureDataCases
      *
      * @throws CryptException
      */
@@ -170,9 +172,7 @@ class CryptTest extends TestCase
 
     // region Options
 
-    /**
-     * @throws CryptException
-     */
+    /** @throws CryptException */
     public function testSetOptionMemoryCost(): void
     {
         Crypt::setOptionArgon2iMemoryCost(128);
@@ -196,9 +196,7 @@ class CryptTest extends TestCase
         Crypt::setOptionArgon2iMemoryCost(0);
     }
 
-    /**
-     * @throws CryptException
-     */
+    /** @throws CryptException */
     public function testSetOptionTimeCost(): void
     {
         Crypt::setOptionArgon2iTimeCost(3);
@@ -215,9 +213,7 @@ class CryptTest extends TestCase
         Crypt::setOptionArgon2iTimeCost(0);
     }
 
-    /**
-     * @throws CryptException
-     */
+    /** @throws CryptException */
     public function testSetOptionThreads(): void
     {
         Crypt::setOptionArgon2iThreads(5);
@@ -240,9 +236,7 @@ class CryptTest extends TestCase
         Crypt::setOptionArgon2iThreads(0);
     }
 
-    /**
-     * @throws CryptException
-     */
+    /** @throws CryptException */
     public function testSetGetOptionBcryptCost(): void
     {
         Crypt::setOptionBcryptCost(5);
@@ -271,9 +265,7 @@ class CryptTest extends TestCase
 
     // region Random String
 
-    /**
-     * @throws CryptException
-     */
+    /** @throws CryptException */
     public function testSetGetCharacters(): void
     {
         Crypt::setCharactersForRandomString('aze');
@@ -290,9 +282,7 @@ class CryptTest extends TestCase
         Crypt::setCharactersForRandomString('');
     }
 
-    /**
-     * @throws CryptException
-     */
+    /** @throws CryptException */
     public function testGetRandomString(): void
     {
         $randomString = Crypt::getRandomString();
@@ -319,9 +309,7 @@ class CryptTest extends TestCase
         static::assertNotSame('a', Crypt::getCharactersForRandomString());
     }
 
-    /**
-     * @throws CryptException
-     */
+    /** @throws CryptException */
     public function testGetRandomStringCryptException(): void
     {
         $this->expectException(CryptException::class);
