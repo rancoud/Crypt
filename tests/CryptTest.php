@@ -10,11 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Rancoud\Crypt\Crypt;
 use Rancoud\Crypt\CryptException;
 
-/**
- * Class CryptTest.
- *
- * @internal
- */
+/** @internal */
 #[RunTestsInSeparateProcesses]
 class CryptTest extends TestCase
 {

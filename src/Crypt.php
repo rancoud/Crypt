@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Rancoud\Crypt;
 
-/**
- * Class Crypt.
- */
 class Crypt
 {
     /**
