@@ -76,22 +76,16 @@ class Crypt
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsArgon2i);
             } else {
                 if (\mb_strlen($password) > static::MAX_LENGTH_BCRYPT) {
-                    throw new CryptException('Password too long');
+                    throw new CryptException(
+                        \sprintf(
+                            'Password too long for bcrypt (%d max): %d chars',
+                            static::MAX_LENGTH_BCRYPT,
+                            \mb_strlen($password)
+                        )
+                    );
                 }
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsBcrypt);
             }
-        } catch (\Exception $e) {
-            if ($e->getMessage() === 'Password too long') {
-                throw new CryptException(
-                    \sprintf(
-                        'Password too long for bcrypt (%d max): %d chars',
-                        static::MAX_LENGTH_BCRYPT,
-                        \mb_strlen($password)
-                    )
-                );
-            }
-
-            throw new CryptException('Hash Failure: ' . $e->getMessage());
         } catch (\Throwable $t) {
             throw new CryptException('Hash Failure: ' . $t->getMessage());
         }
