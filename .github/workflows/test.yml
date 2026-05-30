@@ -8,12 +8,13 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    paths-ignore:
-      - '**.md'
   pull_request:
     paths-ignore:
       - '**.md'
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   test:
