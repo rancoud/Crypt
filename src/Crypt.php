@@ -75,12 +75,12 @@ class Crypt
             if (static::$algoCurrent === static::$algoArgon2i || static::$algoCurrent === static::$algoArgon2id) {
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsArgon2i);
             } else {
-                if (\mb_strlen($password) > static::MAX_LENGTH_BCRYPT) {
+                if (\strlen($password) > static::MAX_LENGTH_BCRYPT) {
                     throw new CryptException(
                         \sprintf(
-                            'Password too long for bcrypt (%d max): %d chars',
+                            'Password too long for bcrypt (%d max): %d bytes',
                             static::MAX_LENGTH_BCRYPT,
-                            \mb_strlen($password)
+                            \strlen($password)
                         )
                     );
                 }

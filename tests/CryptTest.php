@@ -53,6 +53,11 @@ class CryptTest extends TestCase
             'useAlgo'  => 'useBcrypt',
             'password' => 'my_password_bcrypt',
         ];
+
+        yield 'Bcrypt - multi bytes string (here 36 é characters give 72 bytes)' => [
+            'useAlgo'  => 'useBcrypt',
+            'password' => 'éééééééééééééééééééééééééééééééééééé',
+        ];
     }
 
     /** @throws CryptException */
@@ -128,6 +133,12 @@ class CryptTest extends TestCase
         yield 'Bcrypt' => [
             'useAlgo'      => 'useBcrypt',
             'password'     => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
+            'errorMessage' => 'Password too long',
+        ];
+
+        yield 'Bcrypt - multi bytes string (here 37 é characters give 74 bytes)' => [
+            'useAlgo'      => 'useBcrypt',
+            'password'     => 'ééééééééééééééééééééééééééééééééééééé',
             'errorMessage' => 'Password too long',
         ];
     }
