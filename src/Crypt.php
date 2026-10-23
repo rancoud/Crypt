@@ -217,18 +217,18 @@ class Crypt
             throw new CryptException(\sprintf('Length must be greater than 0: %d', $length));
         }
 
-        $initialCharacters = null;
-        if ($characters !== null) {
-            $initialCharacters = static::getCharactersForRandomString();
-            static::setCharactersForRandomString($characters);
+        if ($characters === null || $characters === '') {
+            $charactersPool = static::getCharactersForRandomString();
+        } else {
+            $charactersPool = $characters;
         }
 
         $string = '';
-        $countCharacters = \mb_strlen(static::$characters) - 1;
+        $countCharacters = \mb_strlen($charactersPool) - 1;
 
         try {
             for ($i = 0; $i < $length; ++$i) {
-                $string .= \mb_substr(static::$characters, \random_int(0, $countCharacters), 1);
+                $string .= \mb_substr($charactersPool, \random_int(0, $countCharacters), 1);
             }
             // @codeCoverageIgnoreStart
         } catch (\Exception $e) {
@@ -237,10 +237,6 @@ class Crypt
              */
             throw new CryptException($e->getMessage(), $e->getCode(), $e->getPrevious());
             // @codeCoverageIgnoreEnd
-        } finally {
-            if ($initialCharacters !== null) {
-                static::setCharactersForRandomString($initialCharacters);
-            }
         }
 
         return $string;
