@@ -213,6 +213,10 @@ class Crypt
      */
     public static function getRandomString(int $length = 64, ?string $characters = null): string
     {
+        if ($length < 1) {
+            throw new CryptException(\sprintf('Length must be greater than 0: %d', $length));
+        }
+
         $initialCharacters = null;
         if ($characters !== null) {
             $initialCharacters = static::getCharactersForRandomString();

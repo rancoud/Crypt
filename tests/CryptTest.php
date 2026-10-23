@@ -276,6 +276,9 @@ class CryptTest extends TestCase
         $randomString = Crypt::getRandomString();
         static::assertSame(64, \mb_strlen($randomString));
 
+        $randomString = Crypt::getRandomString(1);
+        static::assertSame(1, \mb_strlen($randomString));
+
         $randomString = Crypt::getRandomString(105);
         static::assertSame(105, \mb_strlen($randomString));
 
@@ -295,6 +298,15 @@ class CryptTest extends TestCase
         static::assertSame(25, \mb_strlen($randomString));
         static::assertSame('숍訊昱穿刷奄剔㏆穽侘㈊섞昌侄從쒜', Crypt::getCharactersForRandomString());
         static::assertNotSame('a', Crypt::getCharactersForRandomString());
+    }
+
+    /** @throws CryptException */
+    public function testInvalidLengthGetRandomStringCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Length must be greater than 0: 0');
+
+        Crypt::getRandomString(0, '');
     }
 
     /** @throws CryptException */
