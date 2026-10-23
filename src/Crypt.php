@@ -114,20 +114,20 @@ class Crypt
     // region Options
 
     /**
-     * Sets memory cost for `argon2id` and `argon2i`.<br>
+     * Sets memory cost in KiB for `argon2id` and `argon2i`.<br>
      * Must be equal or greater than 8.
      *
      * @throws CryptException
      */
-    public static function setOptionArgon2iMemoryCost(int $bytes): void
+    public static function setOptionArgon2iMemoryCost(int $kib): void
     {
-        if ($bytes < static::MIN_MEMORY_COST) {
-            throw new CryptException(\sprintf('Memory cost is too small: %d bytes', $bytes));
+        if ($kib < static::MIN_MEMORY_COST) {
+            throw new CryptException(\sprintf('Memory cost is too small: %d KiB', $kib));
         }
 
-        static::$optionsArgon2i['memory_cost'] = $bytes;
+        static::$optionsArgon2i['memory_cost'] = $kib;
 
-        $minThreads = \floor($bytes / 8);
+        $minThreads = \floor($kib / 8);
         if (static::$optionsArgon2i['threads'] < $minThreads) {
             static::$optionsArgon2i['threads'] = $minThreads;
         }

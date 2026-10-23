@@ -179,7 +179,7 @@ class CryptTest extends TestCase
     public function testSetOptionMemoryCostCryptException(): void
     {
         $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Memory cost is too small: 0 bytes');
+        $this->expectExceptionMessage('Memory cost is too small: 0 KiB');
 
         Crypt::setOptionArgon2iMemoryCost(0);
     }
