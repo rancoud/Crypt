@@ -283,13 +283,13 @@ class CryptTest extends TestCase
         static::assertSame(105, \mb_strlen($randomString));
 
         $randomString = Crypt::getRandomString(1, 'п');
-        static::assertEquals('п', $randomString);
+        static::assertSame('п', $randomString);
 
         $randomString = Crypt::getRandomString(1);
-        static::assertNotEquals('п', $randomString);
+        static::assertNotSame('п', $randomString);
 
         $randomString = Crypt::getRandomString(1, ' ');
-        static::assertEquals(' ', $randomString);
+        static::assertSame(' ', $randomString);
     }
 
     /** @throws CryptException */
