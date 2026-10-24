@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-26.04
         php-version:
           - '8.4'
           - '8.5'
@@ -68,9 +68,28 @@ jobs:
         run: |
           vendor/bin/phpunit --colors --display-all-issues --coverage-text --coverage-clover coverage/clover.xml
 
-      - name: Upload coverage
-        uses: codecov/codecov-action@v6
+      - name: Coverage summary
         if: success()
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/clover.xml
+        shell: bash
+        run: |
+          if [[ ! -f coverage/clover.xml ]]; then
+            echo "## Code coverage" >> "$GITHUB_STEP_SUMMARY"
+            echo "Coverage report not found." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          metrics=$(grep -m1 -o '<metrics[^>]*/>' coverage/clover.xml)
+
+          total=$(sed -n 's/.*statements="\([0-9]*\)".*/\1/p' <<< "$metrics")
+          covered=$(sed -n 's/.*coveredstatements="\([0-9]*\)".*/\1/p' <<< "$metrics")
+
+          {
+            echo "## Code coverage"
+            echo ""
+            if [[ "$total" =~ ^[0-9]+$ ]] && (( total > 0 )) && [[ "$covered" =~ ^[0-9]+$ ]]; then
+              percentage=$(awk -v c="$covered" -v t="$total" 'BEGIN { printf "%.2f", c / t * 100 }')
+              echo "**Coverage: ${percentage}%** (${covered}/${total} statements covered)"
+            else
+              echo "Unable to calculate coverage from Clover metrics."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
