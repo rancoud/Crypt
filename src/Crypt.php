@@ -8,7 +8,7 @@ class Crypt
 {
     /**
      * @var int Maximum characters length for `2y` (bcrypt) to process.<br>
-     *          Bcrypt algorithm can not use more than 72 characters.
+     *          Bcrypt algorithm can not use more than 72 bytes.
      */
     protected const int MAX_LENGTH_BCRYPT = 72;
 
@@ -67,7 +67,7 @@ class Crypt
      *
      * @throws CryptException
      */
-    public static function hash(string $password): string
+    public static function hash(#[\SensitiveParameter] string $password): string
     {
         static::chooseAlgo();
 
@@ -94,7 +94,7 @@ class Crypt
     }
 
     /** Checks if password and hash match. */
-    public static function verify(string $password, string $hash): bool
+    public static function verify(#[\SensitiveParameter] string $password, string $hash): bool
     {
         return \password_verify($password, $hash);
     }
