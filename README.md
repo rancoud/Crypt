@@ -69,19 +69,19 @@ public static function useBcrypt(): void
 
 ### Options
 Sets memory cost in KiB for `argon2id` and `argon2i`.<br>
-Must be equal or greater than 8.
+Must be between 8 and 1 048 576 and compatible with current threads.
 ```php
 public static function setOptionArgon2iMemoryCost(int $kib): void
 ```
 
 Sets number of threads for `argon2id` and `argon2i`.<br>
-Must be equal or greater than 1.
+Must be between 1 and 64 and compatible with current memory cost.
 ```php
 public static function setOptionArgon2iThreads(int $threads): void
 ```
 
 Sets time cost for `argon2id` and `argon2i`.<br>
-Must be equal or greater than 1.
+Must be between 1 and 10.
 ```php
 public static function setOptionArgon2iTimeCost(int $time): void
 ```

@@ -7,7 +7,7 @@ namespace Rancoud\Crypt;
 class Crypt
 {
     /**
-     * @var int Maximum characters length for `2y` (bcrypt) to process.<br>
+     * @var int Maximum bytes length for `2y` (bcrypt) to process.<br>
      *          Bcrypt algorithm can not use more than 72 bytes.
      */
     protected const int MAX_LENGTH_BCRYPT = 72;
@@ -15,11 +15,20 @@ class Crypt
     /** @var int Minimum value for memory cost */
     protected const int MIN_MEMORY_COST = 8;
 
+    /** @var int Maximum memory cost in KiB (1 GiB) */
+    protected const int MAX_MEMORY_COST = 1_048_576;
+
     /** @var int Minimum value for time cost */
     protected const int MIN_TIME_COST = 1;
 
+    /** @var int Maximum value for time cost */
+    protected const int MAX_TIME_COST = 10;
+
     /** @var int Minimum value for threads */
     protected const int MIN_THREADS = 1;
+
+    /** @var int Maximum value for threads */
+    protected const int MAX_THREADS = 64;
 
     /** @var int Minimum value for rounds */
     protected const int MIN_ROUNDS = 4;
@@ -87,7 +96,7 @@ class Crypt
                 $string = \password_hash($password, static::$algoCurrent, static::$optionsBcrypt);
             }
         } catch (\Throwable $t) {
-            throw new CryptException('Hash Failure: ' . $t->getMessage());
+            throw new CryptException('Hash Failure: ' . $t->getMessage(), 0, $t);
         }
 
         return $string;
@@ -115,34 +124,33 @@ class Crypt
 
     /**
      * Sets memory cost in KiB for `argon2id` and `argon2i`.<br>
-     * Must be equal or greater than 8.
+     * Must be between 8 and 1 048 576 and compatible with current threads.
      *
      * @throws CryptException
      */
-    public static function setOptionArgon2iMemoryCost(int $kib): void
+    public static function setOptionArgon2iMemoryCost(int $memoryCostInKiB): void
     {
-        if ($kib < static::MIN_MEMORY_COST) {
-            throw new CryptException(\sprintf('Memory cost is too small: %d KiB', $kib));
+        if ($memoryCostInKiB < static::MIN_MEMORY_COST || $memoryCostInKiB > static::MAX_MEMORY_COST) {
+            throw new CryptException(\sprintf('Memory cost must be between %d and %d KiB: %d KiB', static::MIN_MEMORY_COST, static::MAX_MEMORY_COST, $memoryCostInKiB));
         }
 
-        static::$optionsArgon2i['memory_cost'] = $kib;
-
-        $minThreads = \floor($kib / 8);
-        if (static::$optionsArgon2i['threads'] < $minThreads) {
-            static::$optionsArgon2i['threads'] = $minThreads;
+        if ($memoryCostInKiB < static::$optionsArgon2i['threads'] * 8) {
+            throw new CryptException('Memory cost must be at least 8 KiB per thread');
         }
+
+        static::$optionsArgon2i['memory_cost'] = $memoryCostInKiB;
     }
 
     /**
      * Sets time cost for `argon2id` and `argon2i`.<br>
-     * Must be equal or greater than 1.
+     * Must be between 1 and 10.
      *
      * @throws CryptException
      */
     public static function setOptionArgon2iTimeCost(int $time): void
     {
-        if ($time < static::MIN_TIME_COST) {
-            throw new CryptException(\sprintf('Time cost is too small: %d', $time));
+        if ($time < static::MIN_TIME_COST || $time > static::MAX_TIME_COST) {
+            throw new CryptException(\sprintf('Time cost must be between %d and %d: %d', static::MIN_TIME_COST, static::MAX_TIME_COST, $time));
         }
 
         static::$optionsArgon2i['time_cost'] = $time;
@@ -150,21 +158,21 @@ class Crypt
 
     /**
      * Sets number of threads for `argon2id` and `argon2i`.<br>
-     * Must be equal or greater than 1.
+     * Must be between 1 and 64 and compatible with current memory cost.
      *
      * @throws CryptException
      */
     public static function setOptionArgon2iThreads(int $threads): void
     {
-        if ($threads < static::MIN_THREADS) {
-            throw new CryptException(\sprintf('Number of threads is too small: %d', $threads));
+        if ($threads < static::MIN_THREADS || $threads > static::MAX_THREADS) {
+            throw new CryptException(\sprintf('Number of threads must be between %d and %d: %d', static::MIN_THREADS, static::MAX_THREADS, $threads));
         }
-        static::$optionsArgon2i['threads'] = $threads;
 
-        $minMemoryCost = $threads * 8;
-        if (static::$optionsArgon2i['memory_cost'] < $minMemoryCost) {
-            static::$optionsArgon2i['memory_cost'] = $minMemoryCost;
+        if (static::$optionsArgon2i['memory_cost'] < $threads * 8) {
+            throw new CryptException('Memory cost must be at least 8 KiB per thread');
         }
+
+        static::$optionsArgon2i['threads'] = $threads;
     }
 
     /** Returns options for `argon2id` and `argon2i`. */
