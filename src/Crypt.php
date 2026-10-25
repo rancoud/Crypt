@@ -63,7 +63,7 @@ class Crypt
         '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
     /**
-     * Hashs the password according to the selected algorithm.
+     * Hashes the password according to the selected algorithm.
      *
      * @throws CryptException
      */

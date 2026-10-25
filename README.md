@@ -30,7 +30,7 @@ Crypt::useBcrypt();
 
 ## Crypt
 ### Main functions
-Hashs the password according to the selected algorithm.
+Hashes the password according to the selected algorithm.
 ```php
 public static function hash(string $password): string
 ```
