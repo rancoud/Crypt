@@ -118,18 +118,6 @@ class CryptTest extends TestCase
 
     public static function provideHashFailureDataCases(): iterable
     {
-        yield 'Argon2id' => [
-            'useAlgo'      => 'useArgon2id',
-            'password'     => 'my_password_argon_2id',
-            'errorMessage' => 'Hash Failure',
-        ];
-
-        yield 'Argon2i' => [
-            'useAlgo'      => 'useArgon2i',
-            'password'     => 'my_password_argon_2i',
-            'errorMessage' => 'Hash Failure',
-        ];
-
         yield 'Bcrypt' => [
             'useAlgo'      => 'useBcrypt',
             'password'     => 'azertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiopazertyuiop',
@@ -152,7 +140,6 @@ class CryptTest extends TestCase
         $this->expectException(CryptException::class);
         $this->expectExceptionMessage($errorMessage);
 
-        Crypt::setOptionArgon2iMemoryCost(999999999);
         Crypt::hash($password);
     }
 
@@ -166,22 +153,32 @@ class CryptTest extends TestCase
         Crypt::setOptionArgon2iMemoryCost(128);
         $options = Crypt::getOptionsArgon2i();
         static::assertSame(128, $options['memory_cost']);
+    }
 
-        Crypt::setOptionArgon2iThreads(2);
-        $options = Crypt::getOptionsArgon2i();
-        static::assertSame(128, $options['memory_cost']);
+    public function testSetMinimumOptionMemoryCostCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Memory cost must be between 8 and 1048576 KiB: 7 KiB');
 
-        Crypt::setOptionArgon2iThreads(24);
-        $options = Crypt::getOptionsArgon2i();
-        static::assertSame(192, $options['memory_cost']);
+        Crypt::setOptionArgon2iMemoryCost(7);
+    }
+
+    public function testSetMaximumOptionMemoryCostCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Memory cost must be between 8 and 1048576 KiB: 1048577 KiB');
+
+        Crypt::setOptionArgon2iMemoryCost(1_048_577);
     }
 
     public function testSetOptionMemoryCostCryptException(): void
     {
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Memory cost is too small: 0 KiB');
+        Crypt::setOptionArgon2iThreads(4);
 
-        Crypt::setOptionArgon2iMemoryCost(0);
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Memory cost must be at least 8 KiB per thread');
+
+        Crypt::setOptionArgon2iMemoryCost(12);
     }
 
     /** @throws CryptException */
@@ -193,12 +190,20 @@ class CryptTest extends TestCase
         static::assertSame(3, $options['time_cost']);
     }
 
-    public function testSetOptionTimeCostCryptException(): void
+    public function testSetMinimumOptionTimeCostCryptException(): void
     {
         $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Time cost is too small: 0');
+        $this->expectExceptionMessage('Time cost must be between 1 and 10: 0');
 
         Crypt::setOptionArgon2iTimeCost(0);
+    }
+
+    public function testSetMaximumOptionTimeCostCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Time cost must be between 1 and 10: 11');
+
+        Crypt::setOptionArgon2iTimeCost(11);
     }
 
     /** @throws CryptException */
@@ -208,20 +213,32 @@ class CryptTest extends TestCase
         $options = Crypt::getOptionsArgon2i();
         static::assertSame(5, $options['threads']);
         static::assertSame(65536, $options['memory_cost']);
+    }
 
-        Crypt::setOptionArgon2iMemoryCost(8);
-        Crypt::setOptionArgon2iThreads(5);
-        $options = Crypt::getOptionsArgon2i();
-        static::assertSame(5, $options['threads']);
-        static::assertSame(5 * 8, $options['memory_cost']);
+    public function testSetMinimumOptionThreadsCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Number of threads must be between 1 and 64: 0');
+
+        Crypt::setOptionArgon2iThreads(0);
+    }
+
+    public function testSetMaximumOptionThreadsCryptException(): void
+    {
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Number of threads must be between 1 and 64: 65');
+
+        Crypt::setOptionArgon2iThreads(65);
     }
 
     public function testSetOptionThreadsCryptException(): void
     {
-        $this->expectException(CryptException::class);
-        $this->expectExceptionMessage('Number of threads is too small: 0');
+        Crypt::setOptionArgon2iMemoryCost(8);
 
-        Crypt::setOptionArgon2iThreads(0);
+        $this->expectException(CryptException::class);
+        $this->expectExceptionMessage('Memory cost must be at least 8 KiB per thread');
+
+        Crypt::setOptionArgon2iThreads(5);
     }
 
     /** @throws CryptException */
