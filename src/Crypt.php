@@ -108,7 +108,11 @@ class Crypt
         return \password_verify($password, $hash);
     }
 
-    /** Checks whether the hash needs to be rehash to match the selected algorithm and options. */
+    /**
+     * Checks whether the hash needs to be rehash to match the selected algorithm and options.
+     *
+     * @throws CryptException
+     */
     public static function needsRehash(string $hash): bool
     {
         static::chooseAlgo();
@@ -274,28 +278,62 @@ class Crypt
 
     // region Set specific algorithm
 
-    /** Sets the algorithm to `argon2id`. */
+    /**
+     * Sets the algorithm to `argon2id`.
+     *
+     * @throws CryptException
+     */
     public static function useArgon2id(): void
     {
+        static::assertAlgoAvailable(static::$algoArgon2id);
+
         static::$algoFixed = true;
 
         static::$algoCurrent = static::$algoArgon2id;
     }
 
-    /** Sets the algorithm to `argon2i`. */
+    /**
+     * Sets the algorithm to `argon2i`.
+     *
+     * @throws CryptException
+     */
     public static function useArgon2i(): void
     {
+        static::assertAlgoAvailable(static::$algoArgon2i);
+
         static::$algoFixed = true;
 
         static::$algoCurrent = static::$algoArgon2i;
     }
 
-    /** Sets the algorithm to `2y` (bcrypt). */
+    /**
+     * Sets the algorithm to `2y` (bcrypt).
+     *
+     * @throws CryptException
+     */
     public static function useBcrypt(): void
     {
+        static::assertAlgoAvailable(static::$algoBcrypt);
+
         static::$algoFixed = true;
 
         static::$algoCurrent = static::$algoBcrypt;
+    }
+
+    /**
+     * Assert an algorithm is available by reading \password_algos().
+     *
+     * @throws CryptException
+     */
+    protected static function assertAlgoAvailable(string $algo): void
+    {
+        if (!\in_array($algo, \password_algos(), true)) {
+            // @codeCoverageIgnoreStart
+            /* Need to build a specific version of PHP with nothing.
+             */
+            throw new CryptException(\sprintf('Password hashing algorithm is not available: %s', $algo));
+            // @codeCoverageIgnoreEnd
+        }
     }
 
     /**
@@ -304,6 +342,8 @@ class Crypt
      *
      * @codeCoverageIgnore
      * This function is ignore because it depends on how PHP has been built.
+     *
+     * @throws CryptException
      */
     protected static function chooseAlgo(): void
     {
@@ -311,12 +351,16 @@ class Crypt
             return;
         }
 
-        if (\defined('PASSWORD_ARGON2ID')) {
+        $algorithms = \password_algos();
+
+        if (\in_array(static::$algoArgon2id, $algorithms, true)) {
             static::$algoCurrent = static::$algoArgon2id;
-        } elseif (\defined('PASSWORD_ARGON2I')) {
+        } elseif (\in_array(static::$algoArgon2i, $algorithms, true)) {
             static::$algoCurrent = static::$algoArgon2i;
-        } else {
+        } elseif (\in_array(static::$algoBcrypt, $algorithms, true)) {
             static::$algoCurrent = static::$algoBcrypt;
+        } else {
+            throw new CryptException('No supported password hashing algorithm available');
         }
     }
 
