@@ -32,7 +32,7 @@ Crypt::useBcrypt();
 ### Main functions
 Hashes the password according to the selected algorithm.
 ```php
-public static function hash(string $password): string
+public static function hash(#[\SensitiveParameter] string $password): string
 ```
 
 Checks whether the hash needs to be rehash to match the selected algorithm and options.
@@ -42,7 +42,7 @@ public static function needsRehash(string $hash): bool
 
 Checks if password and hash match.
 ```php
-public static function verify(string $password, string $hash): bool
+public static function verify(#[\SensitiveParameter] string $password, string $hash): bool
 ```
 
 ### Algorithms
